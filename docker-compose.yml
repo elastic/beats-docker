@@ -1,0 +1,10 @@
+---
+version: '2'
+services:
+  metricbeat:
+    build:
+      context: build/metricbeat
+      args:
+        ELASTIC_VERSION: "${ELASTIC_VERSION}"
+        DOWNLOAD_URL: "${DOWNLOAD_URL}"
+    image: "${IMAGE}"
