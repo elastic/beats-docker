@@ -1,43 +1,48 @@
 SHELL=/bin/bash
 ifndef ELASTIC_VERSION
-ELASTIC_VERSION=5.2.0
+export ELASTIC_VERSION := 5.2.0
 endif
 
 ifdef STAGING_BUILD_NUM
-VERSION_TAG=$(ELASTIC_VERSION)-$(STAGING_BUILD_NUM)
-DOWNLOAD_URL_ROOT=https://staging.elastic.co/downloads/beats
+export VERSION_TAG := $(ELASTIC_VERSION)-$(STAGING_BUILD_NUM)
+DOWNLOAD_URL_ROOT := https://staging.elastic.co/downloads/beats
 else
-VERSION_TAG=$(ELASTIC_VERSION)
-DOWNLOAD_URL_ROOT=https://artifacts.elastic.co/downloads/beats
+export VERSION_TAG := $(ELASTIC_VERSION)
+DOWNLOAD_URL_ROOT := https://artifacts.elastic.co/downloads/beats
 endif
 
-REGISTRY=docker.elastic.co
+BEATS := filebeat metricbeat packetbeat heartbeat
+REGISTRY := docker.elastic.co
+export PATH := venv/bin:$(PATH)
 
-export ELASTIC_VERSION
-export VERSION_TAG
+test: all
+	py.test test/
 
-test: metricbeat
+all: venv $(BEATS) compose-file
+
+compose-file:
+	jinja2 \
+	  -D beats='$(BEATS)' \
+	  -D version=$(VERSION_TAG) \
+	  -D registry=$(REGISTRY) \
+	  templates/docker-compose.yml.j2 > docker-compose.yml
+
+demo: all
+	docker-compose up
+
+$(BEATS):
+	mkdir -p build/$@/config
+	touch build/$@/config/$@.yml
+	jinja2 \
+	  -D beat=$@ \
+	  -D version=$(ELASTIC_VERSION) \
+	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(VERSION_TAG)-linux-x86_64.tar.gz \
+          templates/Dockerfile.j2 > build/$@/Dockerfile
+
+	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
+
+venv:
 	test -d venv || virtualenv --python=python3.5 venv
-	( \
-	  source venv/bin/activate; \
-	  pip install -r test/requirements.txt; \
-	  py.test test/ \
-	)
+	pip install -r requirements.txt
 
-all: metricbeat
-
-metricbeat:
-	IMAGE=$(REGISTRY)/beats/metricbeat/metricbeat:$(VERSION_TAG) \
-	DOWNLOAD_URL=$(DOWNLOAD_URL_ROOT)/metricbeat/metricbeat-$(VERSION_TAG)-linux-x86_64.tar.gz \
-	docker-compose build --pull metricbeat
-
-clean:
-	docker-compose down
-	docker-compose rm --force
-
-demo:
-	IMAGE=$(REGISTRY)/beats/metricbeat/metricbeat:$(VERSION_TAG) \
-	DOWNLOAD_URL=$(DOWNLOAD_URL_ROOT)/metricbeat/metricbeat-$(VERSION_TAG)-linux-x86_64.tar.gz \
-	docker-compose -f docker-compose.demo.yml up
-
-.PHONY: test all metricbeat clean demo
+.PHONY: test all demo $(BEATS) venv compose-file

@@ -1,0 +1,29 @@
+# This Dockerfile was generated from the template at ../templates/Dockerfile.j2
+
+FROM ubuntu:16.04
+MAINTAINER Elastic Docker Team <docker@elastic.co>
+
+RUN apt-get update && apt-get install -y curl && apt-get clean
+
+RUN curl -Lso - {{ url }} | \
+    tar zxf - -C /usr/share && \
+    mv /usr/share/{{ beat }}-{{ version }}-linux-x86_64 /usr/share/{{ beat }}
+
+ENV PATH=/usr/share/{{ beat }}:$PATH
+
+COPY config/{{ beat }}.yml /usr/share/{{ beat }}/
+
+# Provide a non-root user to run the process.
+RUN chown --recursive 1000:1000 /usr/share/{{ beat }} && \
+    addgroup --gid 1000 {{ beat }} && \
+    adduser --disabled-password --gecos={{ beat }} --uid=1000 --gid=1000 --home /usr/share/{{ beat }} {{ beat }}
+
+{%- if beat == 'packetbeat' %}
+USER root
+{%- else %}
+USER {{ beat }}
+{% endif %}
+
+WORKDIR /usr/share/{{ beat }}
+
+CMD ["{{ beat }}", "-e", "-v"]

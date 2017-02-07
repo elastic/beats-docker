@@ -1,0 +1,23 @@
+---
+version: '2'
+services:
+{%- for beat in beats.split() %}
+  {{ beat }}:
+    image: {{ registry }}/beats/{{ beat }}:{{ version }}
+    networks:
+      - elastic-stack
+{% endfor %}
+  elasticsearch:
+    image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
+    networks:
+      - elastic-stack
+
+  kibana:
+    image: {{ registry }}/kibana/kibana:{{ version }}
+    ports:
+      - '5601:5601'
+    networks:
+      - elastic-stack
+
+networks:
+  elastic-stack:
