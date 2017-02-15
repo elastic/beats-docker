@@ -11,7 +11,8 @@ RUN curl -Lso - {{ url }} | \
 
 ENV PATH=/usr/share/{{ beat }}:$PATH
 
-COPY config/{{ beat }}.yml /usr/share/{{ beat }}/
+COPY config/{{ beat }}.yml /usr/share/{{ beat }}/{{ beat.yml }}
+RUN chmod 0600 /usr/share/{{ beat }}/{{ beat }}.yml
 
 # Provide a non-root user to run the process.
 RUN chown --recursive 1000:1000 /usr/share/{{ beat }} && \

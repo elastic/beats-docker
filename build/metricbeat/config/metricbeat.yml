@@ -1,10 +1,12 @@
+name: the-name-has-dashes.wibble.the.gomba
+
 metricbeat.modules:
 - module: system
   metricsets:
     - cpu
-    - load
     - filesystem
     - fsstat
+    - load
     - memory
     - network
     - process
@@ -15,5 +17,5 @@ metricbeat.modules:
 
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
-  username: 'elastic'
-  password: 'changeme'
+  username: elastic
+  password: changeme

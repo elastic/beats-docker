@@ -16,7 +16,17 @@ REGISTRY := docker.elastic.co
 export PATH := venv/bin:$(PATH)
 
 test: all
-	py.test test/
+	docker-compose down
+	docker-compose up --force-recreate -d $(BEATS)
+	for BEAT in $(BEATS); do \
+	  export BEAT ;\
+	  testinfra \
+	    --connection=docker \
+	    --hosts="beatsdocker_$${BEAT}_1" \
+	    test/common \
+	    test/$$BEAT ;\
+	  test $$? -eq 0 || exit $$? ;\
+	done
 
 all: venv $(BEATS) compose-file
 
@@ -45,4 +55,10 @@ venv:
 	test -d venv || virtualenv --python=python3.5 venv
 	pip install -r requirements.txt
 
-.PHONY: test all demo $(BEATS) venv compose-file
+clean: venv
+	docker-compose down -v || true
+	rm -f docker-compose.yml
+	rm -rf venv
+	rm -rf test/__pycache__
+
+.PHONY: cleanr test all demo $(BEATS) venv compose-file
