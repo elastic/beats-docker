@@ -11,7 +11,7 @@ export VERSION_TAG := $(ELASTIC_VERSION)
 DOWNLOAD_URL_ROOT := https://artifacts.elastic.co/downloads/beats
 endif
 
-BEATS := filebeat metricbeat packetbeat heartbeat
+BEATS := $(shell cat beats.txt)
 REGISTRY := docker.elastic.co
 export PATH := venv/bin:$(PATH)
 
