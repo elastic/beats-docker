@@ -51,7 +51,7 @@ venv:
 
 clean: venv
 	docker-compose down -v || true
-	rm -f docker-compose.yml
+	rm -f docker-compose.yml build/*/Dockerfile
 	rm -rf venv
 	find . -name __pycache__ | xargs rm -rf
 

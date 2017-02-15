@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/elastic/beats-docker.svg?branch=master)](https://travis-ci.org/elastic/beats-docker)
+
 ## Description
 
 This repository contains the official [Beats][beats] Docker images from
