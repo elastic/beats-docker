@@ -1,6 +1,12 @@
 import os
 
 beat = os.environ['BEAT']
+version = os.environ['ELASTIC_VERSION']
+
+
+def test_binary_file_version(Command):
+    version_string = '%s version %s (amd64), libbeat %s' % (beat, version, version)
+    assert Command('%s --version' % beat).stdout.strip() == version_string
 
 
 def test_binary_file_permissions(File):
