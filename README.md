@@ -3,6 +3,10 @@
 This repository contains the official [Beats][beats] Docker images from
 [Elastic][elastic].
 
+These images are currently under development, and should be considered alpha-quality.
+
+Please do not run these images in production, but feel free to experiment.
+
 [beats]: https://www.elastic.co/products/beats
 [elastic]: https://www.elastic.co/
 
