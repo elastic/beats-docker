@@ -59,6 +59,6 @@ clean: venv
 	docker-compose down -v || true
 	rm -f docker-compose.yml
 	rm -rf venv
-	rm -rf test/__pycache__
+	find . -name __pycache__ | xargs rm -rf
 
 .PHONY: cleanr test all demo $(BEATS) venv compose-file
