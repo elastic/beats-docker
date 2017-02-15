@@ -17,13 +17,10 @@ export PATH := venv/bin:$(PATH)
 
 
 test: all
-	docker-compose down
-	docker-compose up --force-recreate -d $(BEATS)
 	testinfra -v \
 	  --connection=docker \
 	  --hosts='$(shell echo $(BEATS) | tr " " ",")' \
-	  test/common \
-	  test/$$BEAT
+	  test/common
 
 all: venv $(BEATS) compose-file
 
