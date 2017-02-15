@@ -1,7 +1,10 @@
 from ..fixtures import beat
 import os
 
-version = os.environ['ELASTIC_VERSION']
+try:
+    version = os.environ['ELASTIC_VERSION']
+except KeyError:
+    version = open('version.txt').read().strip()
 
 
 def test_binary_file_version(Command, beat):
