@@ -4,16 +4,19 @@ services:
 {%- for beat in beats.split() %}
   {{ beat }}:
     image: {{ registry }}/beats/{{ beat }}:{{ version }}
+    container_name: {{ beat }}
     networks:
       - elastic-stack
 {% endfor %}
   elasticsearch:
     image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
+    container_name: elasticsearch
     networks:
       - elastic-stack
 
   kibana:
     image: {{ registry }}/kibana/kibana:{{ version }}
+    container_name: kibana
     ports:
       - '5601:5601'
     networks:

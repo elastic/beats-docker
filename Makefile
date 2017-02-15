@@ -15,18 +15,15 @@ BEATS := filebeat metricbeat packetbeat heartbeat
 REGISTRY := docker.elastic.co
 export PATH := venv/bin:$(PATH)
 
+
 test: all
 	docker-compose down
 	docker-compose up --force-recreate -d $(BEATS)
-	for BEAT in $(BEATS); do \
-	  export BEAT ;\
-	  testinfra \
-	    --connection=docker \
-	    --hosts="beatsdocker_$${BEAT}_1" \
-	    test/common \
-	    test/$$BEAT ;\
-	  test $$? -eq 0 || exit $$? ;\
-	done
+	testinfra -v \
+	  --connection=docker \
+	  --hosts='$(shell echo $(BEATS) | tr " " ",")' \
+	  test/common \
+	  test/$$BEAT
 
 all: venv $(BEATS) compose-file
 

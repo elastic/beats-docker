@@ -1,29 +1,20 @@
-import os
-import pytest
-
-beat = os.environ['BEAT']
+from ..fixtures import beat
 
 
-@pytest.fixture()
-def process(Process):
-    return Process.get(comm=beat)
+def test_process_is_pid_1(beat):
+    assert beat.process.pid == 1
 
 
-def test_process_is_pid_1(process):
-    assert process.pid == 1
-
-
-def test_process_is_running_as_the_correct_user(process):
-    if beat == 'packetbeat':
-        correct_user = 'root'
+def test_process_is_running_as_the_correct_user(beat):
+    if beat.name == 'packetbeat':
+        assert beat.process.user == 'root'
     else:
-        correct_user = beat
-    assert process.user == correct_user
+        assert beat.process.user == beat.name
 
 
-def test_process_was_started_with_the_verbose_flag(process):
-    assert '-v' in process['args']
+def test_process_was_started_with_the_verbose_flag(beat):
+    assert '-v' in beat.process['args']
 
 
-def test_process_was_started_with_the_foreground_flag(process):
-    assert '-e' in process['args']
+def test_process_was_started_with_the_foreground_flag(beat):
+    assert '-e' in beat.process['args']
