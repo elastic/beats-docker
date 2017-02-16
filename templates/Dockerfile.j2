@@ -1,4 +1,7 @@
 # This Dockerfile was generated from the template at ../templates/Dockerfile.j2
+{% set beat_home = '/usr/share/%s' % beat -%}
+{% set binary_file = '%s/%s' % (beat_home, beat) -%}
+{% set config_file = '%s/%s.yml' % (beat_home, beat) -%}
 
 FROM ubuntu:16.04
 MAINTAINER Elastic Docker Team <docker@elastic.co>
@@ -6,18 +9,28 @@ MAINTAINER Elastic Docker Team <docker@elastic.co>
 RUN apt-get update && apt-get install -y curl && apt-get clean
 
 RUN curl -Lso - {{ url }} | \
-    tar zxf - -C /usr/share && \
-    mv /usr/share/{{ beat }}-{{ version }}-linux-x86_64 /usr/share/{{ beat }}
+    tar zxf - -C /tmp && \
+    mv /tmp/{{ beat }}-{{ version }}-linux-x86_64 {{ beat_home }}
 
-ENV PATH=/usr/share/{{ beat }}:$PATH
+ENV PATH={{ beat_home }}:$PATH
 
-COPY config/{{ beat }}.yml /usr/share/{{ beat }}/{{ beat.yml }}
-RUN chmod 0600 /usr/share/{{ beat }}/{{ beat }}.yml
+COPY config/{{ beat }}.yml {{ config_file }}
 
-# Provide a non-root user to run the process.
-RUN chown --recursive 1000:1000 /usr/share/{{ beat }} && \
+# Provide a non-root user.
+RUN chown --recursive 1000:1000 {{ beat_home }} && \
     addgroup --gid 1000 {{ beat }} && \
-    adduser --disabled-password --gecos={{ beat }} --uid=1000 --gid=1000 --home /usr/share/{{ beat }} {{ beat }}
+    adduser --disabled-password \
+            --gecos={{ beat }} \
+            --uid=1000 \
+            --gid=1000 \
+            --home {{ beat_home }} \
+            {{ beat }}
+
+# Protect critical files from manipulation by the non-root user.
+RUN chown root:{{ beat }} {{ binary_file }} && \
+    chmod 0750 {{ binary_file }} && \
+    chown root:{{ beat }} {{ config_file }} && \
+    chmod 0640 {{ config_file }}
 
 {%- if beat == 'packetbeat' %}
 USER root
@@ -25,6 +38,6 @@ USER root
 USER {{ beat }}
 {% endif %}
 
-WORKDIR /usr/share/{{ beat }}
+WORKDIR {{ beat_home }}
 
 CMD ["{{ beat }}", "-e", "-v"]

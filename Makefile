@@ -22,7 +22,7 @@ test: all
 	  --hosts='$(shell echo $(BEATS) | tr " " ",")' \
 	  test/common
 
-all: venv $(BEATS) compose-file
+all: venv images compose-file
 
 compose-file:
 	jinja2 \
@@ -33,6 +33,8 @@ compose-file:
 
 demo: all
 	docker-compose up
+
+images: $(BEATS)
 
 $(BEATS):
 	mkdir -p build/$@/config

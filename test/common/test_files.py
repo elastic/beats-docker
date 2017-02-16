@@ -1,4 +1,5 @@
 from ..fixtures import beat
+from pytest import fixture
 import os
 
 try:
@@ -9,18 +10,28 @@ except KeyError:
 
 def test_binary_file_version(Command, beat):
     version_string = '%s version %s (amd64), libbeat %s' % (beat.name, version, version)
-    assert Command('%s --version' % beat.name).stdout.strip() == version_string
+    command = Command('%s --version' % beat.binary_file.path)
+    assert command.stdout.strip() == version_string
 
 
-def test_binary_file_permissions(File, beat):
-    binary = File("/usr/share/%s/%s" % (beat.name, beat.name))
-    assert binary.user == beat.name
-    assert binary.group == beat.name
-    assert binary.mode == 0o0755
+def test_binary_file_is_owned_by_root(beat):
+    assert beat.binary_file.user == 'root'
 
 
-def test_config_file_permissions(File, beat):
-    config = File("/usr/share/%s/%s.yml" % (beat.name, beat.name))
-    assert config.user == beat.name
-    assert config.group == beat.name
-    assert config.mode == 0o0600
+def test_config_file_is_owned_by_root(beat):
+    assert beat.config_file.user == 'root'
+
+
+def test_binary_file_is_not_writable_by_the_beat_user(Command, beat):
+    Command.run_expect([1], 'su -c "echo hax > %s" %s' %
+                       (beat.binary_file.path, beat.name))
+
+
+def test_config_file_is_not_writable_by_the_beat_user(Command, beat):
+    Command.run_expect([1], 'su -c "echo hax > %s" %s' %
+                       (beat.config_file.path, beat.name))
+
+
+def test_config_file_mode(beat):
+    assert beat.config_file.group == beat.name
+    assert beat.config_file.mode == 0o0640
