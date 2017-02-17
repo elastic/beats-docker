@@ -1,4 +1,5 @@
 ---
+# This file was generated from templates/docker-compose.yml.j2
 version: '3'
 services:
 {%- for beat in beats.split() %}
@@ -7,12 +8,11 @@ services:
     container_name: {{ beat }}
     networks:
       - net
-    {% if beat == 'filebeat' %}
+    {%- if beat == 'filebeat' %}
     volumes:
       - /var/log:/mnt/log:ro
-    {% endif %}
+    {%- endif %}
 {% endfor %}
-
   elasticsearch:
     image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
     container_name: elasticsearch
