@@ -1,7 +1,9 @@
 heartbeat.monitors:
 - type: http
   schedule: '@every 5s'
-  urls: ["http://elasticsearch:9200"]
+  urls:
+    - http://elasticsearch:9200
+    - http://kibana:5601
 
 
 output.elasticsearch:
