@@ -15,6 +15,13 @@ BEATS := $(shell cat beats.txt)
 REGISTRY := docker.elastic.co
 export PATH := ./bin:./venv/bin:$(PATH)
 
+# A little helper for running curl against the Elasticsearch container.
+# We'll use the Kibana container, since we know it has network access to
+# Elasticsearch.
+ES_URL := http://elastic:changeme@elasticsearch:9200
+ES_GET := docker-compose run --rm kibana curl -XGET $(ES_URL)
+ES_PUT := docker-compose run --rm kibana curl -XPUT $(ES_URL)
+
 
 test: all
 	testinfra -v test/
@@ -29,6 +36,9 @@ compose-file:
 	  templates/docker-compose.yml.j2 > docker-compose.yml
 
 demo: all
+	docker-compose up -d elasticsearch
+	until $(ES_GET); do sleep 1; done
+	make import-dashboards
 	docker-compose up
 
 images: $(BEATS)
@@ -41,7 +51,6 @@ $(BEATS):
 	  -D version=$(ELASTIC_VERSION) \
 	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(VERSION_TAG)-linux-x86_64.tar.gz \
           templates/Dockerfile.j2 > build/$@/Dockerfile
-
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
 import-dashboards:
@@ -53,6 +62,7 @@ import-dashboards:
 	    -user elastic \
 	    -pass changeme ;\
 	done
+	$(ES_PUT)/.kibana/config/$(ELASTIC_VERSION) -d '{"defaultIndex" : "metricbeat-*"}'
 
 venv:
 	test -d venv || virtualenv --python=python3.5 venv
