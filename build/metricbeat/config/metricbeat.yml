@@ -1,5 +1,3 @@
-name: the-name-has-dashes.wibble.the.gomba
-
 metricbeat.modules:
 - module: system
   metricsets:

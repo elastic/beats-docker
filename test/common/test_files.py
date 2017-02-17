@@ -1,5 +1,4 @@
 from ..fixtures import beat
-from pytest import fixture
 import os
 
 try:
