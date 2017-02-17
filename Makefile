@@ -44,6 +44,16 @@ $(BEATS):
 
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
+import-dashboards:
+	for beat in $(BEATS); do \
+	  docker-compose run --rm $$beat \
+	    scripts/import_dashboards \
+	    -file beats-dashboards-$(ELASTIC_VERSION).zip \
+	    -es http://elasticsearch:9200 \
+	    -user elastic \
+	    -pass changeme ;\
+	done
+
 venv:
 	test -d venv || virtualenv --python=python3.5 venv
 	pip install -r requirements.txt
