@@ -7,7 +7,12 @@ services:
     container_name: {{ beat }}
     networks:
       - net
+    {% if beat == 'filebeat' %}
+    volumes:
+      - /var/log:/mnt/log:ro
+    {% endif %}
 {% endfor %}
+
   elasticsearch:
     image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
     container_name: elasticsearch
