@@ -13,6 +13,9 @@ endif
 
 BEATS := $(shell cat beats.txt)
 REGISTRY := docker.elastic.co
+
+# Make sure we run local versions of everything, particularly commands
+# installed into our virtualenv with pip eg. `docker-compose`.
 export PATH := ./bin:./venv/bin:$(PATH)
 
 # A little helper for running curl against the Elasticsearch container.
@@ -23,26 +26,32 @@ ES_GET := docker-compose run --rm kibana curl -XGET $(ES_URL)
 ES_PUT := docker-compose run --rm kibana curl -XPUT $(ES_URL)
 
 
+# Run the tests with testinfra (actually our custom wrapper at ./bin/testinfra)
+# REF: http://testinfra.readthedocs.io/en/latest/
 test: all
 	testinfra -v test/
+.PHONY: test
 
-all: venv images compose-file
+all: venv images docker-compose.yml
 
-compose-file:
+docker-compose.yml: templates/docker-compose.yml.j2
 	jinja2 \
 	  -D beats='$(BEATS)' \
 	  -D version=$(VERSION_TAG) \
 	  -D registry=$(REGISTRY) \
 	  templates/docker-compose.yml.j2 > docker-compose.yml
 
+# Bring up a full-stack demo with Elasticsearch, Kibana and all the Unix Beats.
+# Point a browser at http://localhost:5601 to see the results, and log in to
+# to Kibana with "elastic"/"changeme".
 demo: all
 	docker-compose up -d elasticsearch
 	until $(ES_GET); do sleep 1; done
 	make import-dashboards
 	docker-compose up
 
+# Build images for all the Beats, generate the Dockerfiles as we go.
 images: $(BEATS)
-
 $(BEATS):
 	mkdir -p build/$@/config
 	touch build/$@/config/$@.yml
@@ -53,7 +62,9 @@ $(BEATS):
           templates/Dockerfile.j2 > build/$@/Dockerfile
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
-import-dashboards:
+# Have each Beat install its default dashboards in Elasticsearch. Also set
+# Kibana's default index pattern as a convenience for `make demo`.
+import-dashboards: all
 	for beat in $(BEATS); do \
 	  docker-compose run --rm $$beat \
 	    scripts/import_dashboards \
@@ -64,14 +75,13 @@ import-dashboards:
 	done
 	$(ES_PUT)/.kibana/config/$(ELASTIC_VERSION) -d '{"defaultIndex" : "metricbeat-*"}'
 
-venv:
+venv: requirements.txt
 	test -d venv || virtualenv --python=python3.5 venv
 	pip install -r requirements.txt
+	touch venv
 
 clean: venv
 	docker-compose down -v || true
 	rm -f docker-compose.yml build/*/Dockerfile
 	rm -rf venv
 	find . -name __pycache__ | xargs rm -rf
-
-.PHONY: clean test all demo $(BEATS) venv compose-file
