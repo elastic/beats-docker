@@ -1,0 +1,9 @@
+#!/bin/bash
+
+exec /usr/share/{{ beat }}/{{ beat }} \
+  -path.home /usr/share/{{ beat }} \
+  -path.config /etc/{{ beat }} \
+  -path.data /var/lib/{{ beat }} \
+  -path.logs /var/log/{{ beat }} \
+  -e \
+  $@

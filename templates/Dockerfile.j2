@@ -1,7 +1,8 @@
 # This Dockerfile was generated from the template at ../templates/Dockerfile.j2
 {% set beat_home = '/usr/share/%s' % beat -%}
 {% set binary_file = '%s/%s' % (beat_home, beat) -%}
-{% set config_file = '%s/%s.yml' % (beat_home, beat) -%}
+{% set config_file = '/etc/%s/%s.yml' % (beat, beat) -%}
+{% set script_file = '/usr/local/bin/%s.yml' % beat -%}
 
 FROM ubuntu:16.04
 MAINTAINER Elastic Docker Team <docker@elastic.co>
@@ -11,12 +12,13 @@ RUN apt-get update && apt-get install -y curl && apt-get clean
 RUN curl -Lso - {{ url }} | \
     tar zxf - -C /tmp && \
     mv /tmp/{{ beat }}-{{ version }}-linux-x86_64 {{ beat_home }}
+ADD https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-{{ version }}.zip {{ beat_home }}
 
 ENV PATH={{ beat_home }}:$PATH
 
 COPY config/{{ beat }}.yml {{ config_file }}
-
-ADD https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-{{ version }}.zip {{ beat_home }}
+COPY config/{{ beat }}-docker.sh {{ script_file }}
+RUN chmod 0755 {{ script_file }}
 
 # Provide a non-root user.
 RUN chown --recursive 1000:1000 {{ beat_home }} && \
@@ -27,6 +29,17 @@ RUN chown --recursive 1000:1000 {{ beat_home }} && \
             --gid=1000 \
             --home {{ beat_home }} \
             {{ beat }}
+
+RUN mkdir -p /etc/{{ beat }} && \
+    chown root:{{ beat }} /etc/{{ beat }} && \
+    chmod 0750 /etc/{{ beat }} && \
+    for dir in /var/lib/{{ beat }} /var/log/{{ beat }}; do \
+      mkdir -p $dir && \
+      chown {{ beat }}:{{ beat }} $dir && \
+      chmod 0770 $dir; \
+    done
+
+RUN ln -s {{ beat_home }}/{{ beat }}.template*.json /etc/{{ beat }}/
 
 # Protect critical files from manipulation by the non-root user.
 RUN chown root:{{ beat }} {{ binary_file }} && \
@@ -42,4 +55,4 @@ USER {{ beat }}
 
 WORKDIR {{ beat_home }}
 
-CMD ["{{ beat }}", "-e", "-v"]
+CMD ["{{ script_file }}"]
