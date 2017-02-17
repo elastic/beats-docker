@@ -13,14 +13,11 @@ endif
 
 BEATS := $(shell cat beats.txt)
 REGISTRY := docker.elastic.co
-export PATH := venv/bin:$(PATH)
+export PATH := ./bin:./venv/bin:$(PATH)
 
 
 test: all
-	testinfra -v \
-	  --connection=docker \
-	  --hosts='$(shell echo $(BEATS) | tr " " ",")' \
-	  test/common
+	testinfra -v test/
 
 all: venv images compose-file
 
