@@ -14,7 +14,7 @@ Please do not run these images in production, but feel free to experiment.
 
 ## Supported Docker versions
 
-The images have been tested on Docker 1.13.0.
+The images have been tested on Docker 1.13.1.
 
 ## Contributing, issues and testing
 

@@ -64,4 +64,4 @@ clean: venv
 	rm -rf venv
 	find . -name __pycache__ | xargs rm -rf
 
-.PHONY: cleanr test all demo $(BEATS) venv compose-file
+.PHONY: clean test all demo $(BEATS) venv compose-file

@@ -6,5 +6,5 @@ heartbeat.monitors:
 
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
-  username: 'elastic'
-  password: 'changeme'
+  username: elastic
+  password: changeme
