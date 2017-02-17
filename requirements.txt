@@ -2,3 +2,4 @@ docker-compose==1.11.1
 jinja2
 jinja2-cli[yaml]
 testinfra==1.5.3
+flake8

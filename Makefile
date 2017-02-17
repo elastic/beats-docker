@@ -28,9 +28,12 @@ ES_PUT := docker-compose run --rm kibana curl -XPUT $(ES_URL)
 
 # Run the tests with testinfra (actually our custom wrapper at ./bin/testinfra)
 # REF: http://testinfra.readthedocs.io/en/latest/
-test: all
+test: lint all
 	testinfra -v test/
 .PHONY: test
+
+lint: venv
+	flake8 test/
 
 all: venv images docker-compose.yml
 
