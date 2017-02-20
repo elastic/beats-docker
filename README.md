@@ -32,6 +32,12 @@ Alternatively, you could extend the image like this:
 FROM docker.elastic.co/beats/metricbeat:5.2.1
 COPY metricbeat.yml /etc/metricbeat/metricbeat.yml
 ```
+#### Environment variables
+Set the `$EXTRA_ARGS` environment variables to pass CLI arguments to the Beat:
+
+``` bash
+docker run -e EXTRA_ARGS='-d shipper' docker.elastic.co/beats/filebeat:5.2.1
+```
 
 ### Metricbeat
 https://www.elastic.co/guide/en/beats/metricbeat/current/running-in-container.html
