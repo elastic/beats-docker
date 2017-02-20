@@ -20,7 +20,7 @@ Elasticsearch and Kibana containers are also provided. Once the containers are a
 ## Operational notes
 ### All Beats
 #### Configuration file
-Each Beat has a YAML configuration file at `/etc/[BEAT]/[BEAT].yml`. A simple default file is provided, but you will probably want to override it by bind-mounting you own configuration like this:
+Each Beat has a YAML configuration file at `/usr/share/[BEAT]/[BEAT].yml`. A simple default file is provided, but you will probably want to override it by bind-mounting you own configuration like this:
 
 ``` bash
 docker run -v metricbeat.yml:/usr/share/metricbeat/metricbeat.yml docker.elastic.co/beats/metricbeat:5.2.1
