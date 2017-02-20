@@ -12,8 +12,6 @@ services:
     volumes:
       - /var/log:/mnt/log:ro
     {%- endif %}
-    environment:
-      - EXTRA_ARGS='-d extra_args_test_canary'
 
 {% endfor %}
   elasticsearch:
