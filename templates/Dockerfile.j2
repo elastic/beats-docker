@@ -2,7 +2,6 @@
 {% set beat_home = '/usr/share/%s' % beat -%}
 {% set binary_file = '/%s/%s' % (beat_home, beat) -%}
 {% set config_file = '/%s/%s.yml' % (beat_home, beat) -%}
-{% set script_file = '/usr/local/bin/%s-docker' % beat -%}
 
 FROM ubuntu:16.04
 MAINTAINER Elastic Docker Team <docker@elastic.co>
@@ -19,8 +18,6 @@ RUN curl -Lso {{ beat_home }}/beats-dashboards-{{ version }}.zip \
 ENV PATH={{ beat_home }}:$PATH
 
 COPY config/{{ beat }}.yml {{ config_file }}
-COPY config/{{ beat }}-docker.sh {{ script_file }}
-RUN chmod 0755 {{ script_file }}
 
 # Provide a non-root user.
 RUN addgroup --gid 1000 {{ beat }} && \
@@ -45,4 +42,4 @@ USER root
 USER {{ beat }}
 {% endif %}
 
-CMD ["{{ script_file }}"]
+CMD ["{{ beat }}", "-e"]

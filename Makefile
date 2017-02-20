@@ -63,9 +63,6 @@ $(BEATS):
 	  -D version=$(ELASTIC_VERSION) \
 	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(VERSION_TAG)-linux-x86_64.tar.gz \
           templates/Dockerfile.j2 > build/$@/Dockerfile
-	jinja2 \
-	  -D beat=$@ \
-	  templates/beat-docker.sh.j2 > build/$@/config/$@-docker.sh
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
 # Have each Beat install its default dashboards in Elasticsearch. Also set
@@ -88,6 +85,6 @@ venv: requirements.txt
 
 clean: venv
 	docker-compose down -v || true
-	rm -f docker-compose.yml build/*/Dockerfile
+	rm -f docker-compose.yml build/*/Dockerfile build/*/config/*.sh
 	rm -rf venv
 	find . -name __pycache__ | xargs rm -rf

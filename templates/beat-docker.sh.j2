@@ -1,7 +1,0 @@
-#!/bin/bash -e
-# This file was generated from templates/beat-docker.sh.j2
-
-exec /usr/share/{{ beat }}/{{ beat }} \
-  -e \
-  $EXTRA_ARGS \
-  $@
