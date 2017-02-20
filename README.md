@@ -90,7 +90,7 @@ and can be invoked with `make test`. Python 3.5 is required to run the
 tests. They are based on the
 excellent [testinfra](http://testinfra.readthedocs.io/en/latest/),
 which is itself based on
-wonderful [pytest](http://doc.pytest.org/en/latest/)
+wonderful [pytest](http://doc.pytest.org/en/latest/).
 
 Please be aware that `beats-docker` is developed under a test-driven
 workflow. Please refrain from submitting patches without test
