@@ -13,7 +13,7 @@ Please do not run these images in production, but feel free to experiment.
 [elastic]: https://www.elastic.co/
 
 ## Quick demo
-Run `make demo` to build, test and run the Beats,
+Run `make demo` to build, test and run the Beats.
 
 Elasticsearch and Kibana containers are also provided. Once the
 containers are all running, point a browser at http://localhost:5601
@@ -93,7 +93,7 @@ which is itself based on
 wonderful [pytest](http://doc.pytest.org/en/latest/)
 
 Please be aware that `beats-docker` is developed under a test-driven
-work-flow. Please refrain from submitting patches without test
+workflow. Please refrain from submitting patches without test
 coverage. If you are not familiar with testing in Python, please
 raise an issue instead.
 
