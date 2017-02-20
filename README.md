@@ -36,7 +36,7 @@ COPY metricbeat.yml /usr/share/metricbeat/metricbeat.yml
 ### Metricbeat
 Normally, container isolation prevents Metricbeat from seeing information about the host system and/or other containers. See [_Running Metricbeat in a Container_][mbcontainer] for details.
 
-In the demo, Metricbeat is configured to monitor the host system.
+In the demo, Metricbeat is configured to monitor processes on the host system.
 
 [mbcontainer]: https://www.elastic.co/guide/en/beats/metricbeat/current/running-in-container.html
 

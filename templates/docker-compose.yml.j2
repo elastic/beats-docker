@@ -6,13 +6,22 @@ services:
   {{ beat }}:
     image: {{ registry }}/beats/{{ beat }}:{{ version }}
     container_name: {{ beat }}
-    networks:
-      - net
+
     {%- if beat == 'filebeat' %}
     volumes:
       - /var/log:/mnt/log:ro
     {%- endif %}
 
+    {%- if beat == 'metricbeat' %}
+    # REF: https://www.elastic.co/guide/en/beats/metricbeat/current/running-in-container.html
+    volumes:
+      - /proc:/hostfs/proc:ro
+      - /sys/fs/cgroup:/hostfs/sys/fs/cgroup:ro
+      - /:/hostfs:ro
+    command: metricbeat -e -system.hostfs=/hostfs
+    {%- endif %}
+    networks:
+      - net
 {% endfor %}
   elasticsearch:
     image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
