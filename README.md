@@ -12,6 +12,12 @@ Please do not run these images in production, but feel free to experiment.
 [beats]: https://www.elastic.co/products/beats
 [elastic]: https://www.elastic.co/
 
+## Prerequisites
+
+1. [docker-engine](https://docs.docker.com/engine/installation/)
+2. python3.5, python3.5-pip and python3.5 development libraries
+3. virtualenv compatible with python3.5
+
 ## Quick demo
 Run `make demo` to build, test and run the Beats.
 
