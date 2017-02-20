@@ -50,8 +50,17 @@ docker run -v /var/log:/mnt/log docker.elastic.co/beats/filebeat:5.2.1
 This mount is configured in the demo, so Filebeat will ship the logs of the host system.
 
 ### Packetbeat
-### Heartbeat
+Packetbeat runs as a non-root user, but requires some network capabilities to operate correctly. Ensure that the `NET_ADMIN` capability is available to the container. Like so:
 
+``` bash
+docker run --cap-add=NET_ADMIN docker.elastic.co/beats/packetbeat:5.2.1
+```
+
+You may also with to connect the Packetbeat container to the host network to see traffic for the host system:
+
+``` bash
+docker run --cap-add=NET_ADMIN --network=host docker.elastic.co/beats/packetbeat:5.2.1
+```
 
 ## Supported Docker versions
 
