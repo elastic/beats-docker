@@ -10,9 +10,11 @@ MAINTAINER Elastic Docker Team <docker@elastic.co>
 RUN apt-get update && apt-get install -y curl && apt-get clean
 
 RUN curl -Lso - {{ url }} | \
-    tar zxf - -C /tmp && \
+      tar zxf - -C /tmp && \
     mv /tmp/{{ beat }}-{{ version }}-linux-x86_64 {{ beat_home }}
-ADD https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-{{ version }}.zip {{ beat_home }}
+
+RUN curl -Lso {{ beat_home }}/beats-dashboards-{{ version }}.zip \
+      https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-{{ version }}.zip
 
 ENV PATH={{ beat_home }}:$PATH
 
