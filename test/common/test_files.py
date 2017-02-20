@@ -15,6 +15,13 @@ def test_binary_file_permissions(beat):
     assert beat.binary_file.mode == 0o0750
 
 
+def test_binary_file_has_network_capabilities(Command, beat):
+    if beat.name == 'packetbeat':
+        caps = Command.check_output('getcap %s' % beat.binary_file.path)
+        assert 'cap_net_raw' in caps
+        assert 'cap_net_admin' in caps
+
+
 def test_script_file_permissions(File, Command, beat):
     script_paths = Command.check_output('find %s/scripts/' % beat.home_dir.path).strip().split()
     for path in script_paths:

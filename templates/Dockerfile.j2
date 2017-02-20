@@ -37,9 +37,8 @@ RUN mkdir data logs && \
     chmod 0770 data logs
 
 {%- if beat == 'packetbeat' %}
-USER root
-{%- else %}
-USER {{ beat }}
+RUN setcap cap_net_raw,cap_net_admin=eip {{ binary_file }}
 {% endif %}
+USER {{ beat }}
 
 CMD ["{{ beat }}", "-e"]

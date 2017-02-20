@@ -1,11 +1,5 @@
 packetbeat.interfaces.device: any
 
-# Not functional.
-# REF: https://github.com/elastic/beats/issues/3542
-#packetbeat.runoptions:
-#  uid: 1000
-#  gid: 65534
-
 packetbeat.protocols.dns:
   ports: [53]
   include_authorities: true

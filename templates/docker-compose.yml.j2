@@ -12,6 +12,17 @@ services:
       - /var/log:/mnt/log:ro
     {%- endif %}
 
+    {%- if beat == 'packetbeat' %}
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    command: packetbeat -v -e -E output.elasticsearch.hosts='["localhost:9200"]'
+    network_mode: host
+    {%- else %}
+    networks:
+      - net
+    {%- endif %}
+
     {%- if beat == 'metricbeat' %}
     # REF: https://www.elastic.co/guide/en/beats/metricbeat/current/running-in-container.html
     volumes:
@@ -20,12 +31,12 @@ services:
       - /:/hostfs:ro
     command: metricbeat -e -system.hostfs=/hostfs
     {%- endif %}
-    networks:
-      - net
 {% endfor %}
   elasticsearch:
     image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
     container_name: elasticsearch
+    ports:
+      - '9200:9200'
     networks:
       - net
 
