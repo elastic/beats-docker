@@ -1,7 +1,7 @@
 # This Dockerfile was generated from templates/Dockerfile.j2
 {% set beat_home = '/usr/share/%s' % beat -%}
-{% set binary_file = '/%s/%s' % (beat_home, beat) -%}
-{% set config_file = '/%s/%s.yml' % (beat_home, beat) -%}
+{% set binary_file = '%s/%s' % (beat_home, beat) -%}
+{% set config_file = '%s/%s.yml' % (beat_home, beat) -%}
 
 FROM ubuntu:16.04
 MAINTAINER Elastic Docker Team <docker@elastic.co>
