@@ -23,14 +23,14 @@ Elasticsearch and Kibana containers are also provided. Once the containers are a
 Each Beat has a YAML configuration file at `/etc/[BEAT]/[BEAT].yml`. A simple default file is provided, but you will probably want to override it by bind-mounting you own configuration like this:
 
 ``` bash
-docker run -v metricbeat.yml:/etc/metricbeat/metricbeat.yml docker.elastic.co/beats/metricbeat:5.2.1
+docker run -v metricbeat.yml:/usr/share/metricbeat/metricbeat.yml docker.elastic.co/beats/metricbeat:5.2.1
 ```
 
 Alternatively, you could extend the image like this:
 
 ``` dockerfile
 FROM docker.elastic.co/beats/metricbeat:5.2.1
-COPY metricbeat.yml /etc/metricbeat/metricbeat.yml
+COPY metricbeat.yml /usr/share/metricbeat/metricbeat.yml
 ```
 #### Environment variables
 Set the `$EXTRA_ARGS` environment variables to pass CLI arguments to the Beat:

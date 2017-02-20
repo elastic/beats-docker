@@ -15,6 +15,15 @@ def test_binary_file_permissions(beat):
     assert beat.binary_file.mode == 0o0750
 
 
+def test_script_file_permissions(File, Command, beat):
+    script_paths = Command.check_output('find %s/scripts/' % beat.home_dir.path).strip().split()
+    for path in script_paths:
+        script = File(path)
+        assert script.user == 'root'
+        assert script.group == beat.name
+        assert script.mode == 0o0750
+
+
 def test_config_file_permissions(beat):
     assert beat.config_file.user == 'root'
     assert beat.config_file.group == beat.name
@@ -28,13 +37,13 @@ def test_config_dir_permissions(beat):
 
 
 def test_data_dir_permissions(beat):
-    assert beat.data_dir.user == beat.name
+    assert beat.data_dir.user == 'root'
     assert beat.data_dir.group == beat.name
     assert beat.data_dir.mode == 0o0770
 
 
 def test_log_dir_permissions(beat):
-    assert beat.log_dir.user == beat.name
+    assert beat.log_dir.user == 'root'
     assert beat.log_dir.group == beat.name
     assert beat.log_dir.mode == 0o0770
 

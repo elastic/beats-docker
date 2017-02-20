@@ -1,7 +1,7 @@
 # This Dockerfile was generated from templates/Dockerfile.j2
 {% set beat_home = '/usr/share/%s' % beat -%}
-{% set binary_file = '%s/%s' % (beat_home, beat) -%}
-{% set config_file = '/etc/%s/%s.yml' % (beat, beat) -%}
+{% set binary_file = '/%s/%s' % (beat_home, beat) -%}
+{% set config_file = '/%s/%s.yml' % (beat_home, beat) -%}
 {% set script_file = '/usr/local/bin/%s-docker' % beat -%}
 
 FROM ubuntu:16.04
@@ -23,8 +23,7 @@ COPY config/{{ beat }}-docker.sh {{ script_file }}
 RUN chmod 0755 {{ script_file }}
 
 # Provide a non-root user.
-RUN chown --recursive 1000:1000 {{ beat_home }} && \
-    addgroup --gid 1000 {{ beat }} && \
+RUN addgroup --gid 1000 {{ beat }} && \
     adduser --disabled-password \
             --gecos={{ beat }} \
             --uid=1000 \
@@ -32,29 +31,18 @@ RUN chown --recursive 1000:1000 {{ beat_home }} && \
             --home {{ beat_home }} \
             {{ beat }}
 
-RUN mkdir -p /etc/{{ beat }} && \
-    chown root:{{ beat }} /etc/{{ beat }} && \
-    chmod 0750 /etc/{{ beat }} && \
-    for dir in /var/lib/{{ beat }} /var/log/{{ beat }}; do \
-      mkdir -p $dir && \
-      chown {{ beat }}:{{ beat }} $dir && \
-      chmod 0770 $dir; \
-    done
-
-RUN ln -s {{ beat_home }}/{{ beat }}.template*.json /etc/{{ beat }}/
-
-# Protect critical files from manipulation by the non-root user.
-RUN chown root:{{ beat }} {{ binary_file }} && \
-    chmod 0750 {{ binary_file }} && \
-    chown root:{{ beat }} {{ config_file }} && \
-    chmod 0640 {{ config_file }}
+WORKDIR {{ beat_home }}
+RUN mkdir data logs && \
+    chown -R root:{{ beat }} . && \
+    find {{ beat_home }} -type d -exec chmod 0750 {} \; && \
+    find {{ beat_home }} -type f -exec chmod 0640 {} \; && \
+    chmod 0750 {{ binary_file }} scripts/* && \
+    chmod 0770 data logs
 
 {%- if beat == 'packetbeat' %}
 USER root
 {%- else %}
 USER {{ beat }}
 {% endif %}
-
-WORKDIR {{ beat_home }}
 
 CMD ["{{ script_file }}"]

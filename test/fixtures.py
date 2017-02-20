@@ -24,14 +24,14 @@ def beat(Process, File, TestinfraBackend):
     # We name the container after the Beat, so asking for the hostname
     # lets us know which Beat we are testing.
     beat_name = TestinfraBackend.get_hostname()
-    beat_home = '/usr/share/%s' % beat_name
+    beat_home = os.path.join(os.sep, 'usr', 'share', beat_name)
     return Beat(
         name=beat_name,
         process=Process.get(comm=beat_name),
         home_dir=File(beat_home),
-        data_dir=File('/var/lib/%s' % (beat_name)),
-        config_dir=File('/etc/%s' % beat_name),
-        log_dir=File('/var/log/%s' % (beat_name)),
-        config_file=File('/etc/%s/%s.yml' % (beat_name, beat_name)),
-        binary_file=File('%s/%s' % (beat_home, beat_name)),
+        data_dir=File(os.path.join(beat_home, 'data')),
+        config_dir=File(beat_home),
+        log_dir=File(os.path.join(beat_home, 'logs')),
+        config_file=File(os.path.join(beat_home, '%s.yml' % beat_name)),
+        binary_file=File(os.path.join(beat_home, beat_name)),
     )

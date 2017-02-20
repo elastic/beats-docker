@@ -12,13 +12,6 @@ def test_process_is_running_as_the_correct_user(beat):
         assert beat.process.user == beat.name
 
 
-def test_process_was_started_with_correct_dir_flags(beat):
-    assert '-path.home %s' % beat.home_dir.path in beat.process.args
-    assert '-path.data %s' % beat.data_dir.path in beat.process.args
-    assert '-path.logs %s' % beat.log_dir.path in beat.process.args
-    assert '-path.config %s' % beat.config_dir.path in beat.process.args
-
-
 def test_process_was_started_with_the_foreground_flag(beat):
     assert '-e' in beat.process['args']
 
