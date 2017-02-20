@@ -2,7 +2,7 @@
 {% set beat_home = '/usr/share/%s' % beat -%}
 {% set binary_file = '%s/%s' % (beat_home, beat) -%}
 {% set config_file = '/etc/%s/%s.yml' % (beat, beat) -%}
-{% set script_file = '/usr/local/bin/%s.yml' % beat -%}
+{% set script_file = '/usr/local/bin/%s-docker' % beat -%}
 
 FROM ubuntu:16.04
 MAINTAINER Elastic Docker Team <docker@elastic.co>
