@@ -21,3 +21,8 @@ def test_process_was_started_with_correct_dir_flags(beat):
 
 def test_process_was_started_with_the_foreground_flag(beat):
     assert '-e' in beat.process['args']
+
+
+def test_extra_args_can_be_passed_in_the_environment(beat):
+    # The 'canary' string we are looking for is specified in docker-compose.yml.
+    assert 'extra_args_test_canary' in beat.process['args']

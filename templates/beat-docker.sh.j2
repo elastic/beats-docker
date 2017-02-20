@@ -7,4 +7,5 @@ exec /usr/share/{{ beat }}/{{ beat }} \
   -path.data /var/lib/{{ beat }} \
   -path.logs /var/log/{{ beat }} \
   -e \
+  $EXTRA_ARGS \
   $@
