@@ -92,8 +92,8 @@ excellent [testinfra](http://testinfra.readthedocs.io/en/latest/),
 which is itself based on
 wonderful [pytest](http://doc.pytest.org/en/latest/).
 
-Please be aware that `beats-docker` is developed under a test-driven
-workflow. Please refrain from submitting patches without test
+`beats-docker` is developed under a test-driven
+workflow, so please refrain from submitting patches without test
 coverage. If you are not familiar with testing in Python, please
 raise an issue instead.
 
