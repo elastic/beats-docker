@@ -22,9 +22,9 @@ Please do not run these images in production, but feel free to experiment.
 Run `make demo` to build, test and run the Beats.
 
 Elasticsearch and Kibana containers are also provided. Once the
-containers are all running, point a browser at http://localhost:5601
-to find Kibana, and log in with `elastic`/`changeme` as the username
-and password.
+containers are all running, point a browser at
+[http://localhost:5601](http://localhost:5601) to find Kibana, and log in
+with `elastic`/`changeme` as the username and password.
 
 ## Operational notes
 ### All Beats
@@ -78,7 +78,7 @@ capability is available to the container. Like so:
 docker run --cap-add=NET_ADMIN docker.elastic.co/beats/packetbeat:5.2.1
 ```
 
-You may also with to connect the Packetbeat container to the host
+You may also wish to connect the Packetbeat container to the host
 network to see traffic for the host system:
 
 ``` bash
