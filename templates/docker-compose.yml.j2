@@ -20,7 +20,7 @@ services:
     network_mode: host
     {%- else %}
     networks:
-      - net
+       - beats
     {%- endif %}
 
     {%- if beat == 'metricbeat' %}
@@ -41,7 +41,7 @@ services:
     ports:
       - '9200:9200'
     networks:
-      - net
+       - beats
 
   kibana:
     image: {{ registry }}/kibana/kibana:{{ version }}
@@ -49,7 +49,7 @@ services:
     ports:
       - '5601:5601'
     networks:
-      - net
+       - beats
 
 networks:
-  net:
+  beats:
