@@ -1,6 +1,6 @@
 ---
 # This file was generated from templates/docker-compose.yml.j2
-version: '2'
+version: '2.1'
 services:
 {%- for beat in beats.split() %}
   {{ beat }}:
@@ -31,6 +31,9 @@ services:
       - /:/hostfs:ro
     command: metricbeat -e -system.hostfs=/hostfs
     {%- endif %}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
 {% endfor %}
   elasticsearch:
     image: {{ registry }}/elasticsearch/elasticsearch:{{ version }}
@@ -39,17 +42,51 @@ services:
       - "http.host=0.0.0.0"
       - "transport.host=127.0.0.1"
     ports:
-      - '9200:9200'
+      - '127.0.0.1:9200:9200'
     networks:
        - beats
+    healthcheck:
+      test: ['CMD', 'curl', '-f', '-u', 'elastic:changeme', 'http://localhost:9200']
 
   kibana:
     image: {{ registry }}/kibana/kibana:{{ version }}
     container_name: kibana
     ports:
-      - '5601:5601'
+      - '127.0.0.1:5601:5601'
     networks:
        - beats
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  import_dashboards:
+      image: {{ registry }}/beats/metricbeat:{{ version }}
+      container_name: import_dashboards
+      networks:
+         - beats
+      # Using -beat "" causes it to install all dashboards in the zip and not just the metricbeat ones.
+      command: >-
+        /usr/share/metricbeat/scripts/import_dashboards
+          -beat ""
+          -file /usr/share/metricbeat/beats-dashboards-5.2.1.zip
+          -es http://elasticsearch:9200
+          -user elastic
+          -pass changeme
+      depends_on:
+        elasticsearch:
+          condition: service_healthy
+
+  set_default_index_pattern:
+      image: {{ registry }}/beats/metricbeat:{{ version }}
+      container_name: set_default_index_pattern
+      networks:
+         - beats
+      command: >-
+        curl -XPUT http://elastic:changeme@elasticsearch:9200/.kibana/config/{{ version }}
+          -d '{"defaultIndex" : "metricbeat-*"}'
+      depends_on:
+        elasticsearch:
+          condition: service_healthy
 
 networks:
   beats:

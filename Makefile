@@ -18,14 +18,6 @@ REGISTRY := docker.elastic.co
 # installed into our virtualenv with pip eg. `docker-compose`.
 export PATH := ./bin:./venv/bin:$(PATH)
 
-# A little helper for running curl against the Elasticsearch container.
-# We'll use the Kibana container, since we know it has network access to
-# Elasticsearch.
-ES_URL := http://elastic:changeme@elasticsearch:9200
-ES_GET := docker-compose run --rm kibana curl -XGET $(ES_URL)
-ES_PUT := docker-compose run --rm kibana curl -XPUT $(ES_URL)
-
-
 # Run the tests with testinfra (actually our custom wrapper at ./bin/testinfra)
 # REF: http://testinfra.readthedocs.io/en/latest/
 test: lint all
@@ -48,9 +40,6 @@ docker-compose.yml: templates/docker-compose.yml.j2
 # Point a browser at http://localhost:5601 to see the results, and log in to
 # to Kibana with "elastic"/"changeme".
 demo: all
-	docker-compose up -d elasticsearch
-	until $(ES_GET); do sleep 1; done
-	make import-dashboards
 	docker-compose up
 
 # Build images for all the Beats, generate the Dockerfiles as we go.
@@ -69,19 +58,6 @@ push: all
 	for beat in $(BEATS); do \
 	  docker push $(REGISTRY)/beats/$$beat; \
 	done
-
-# Have each Beat install its default dashboards in Elasticsearch. Also set
-# Kibana's default index pattern as a convenience for `make demo`.
-import-dashboards: all
-	for beat in $(BEATS); do \
-	  docker-compose run --rm $$beat \
-	    scripts/import_dashboards \
-	    -file beats-dashboards-$(ELASTIC_VERSION).zip \
-	    -es http://elasticsearch:9200 \
-	    -user elastic \
-	    -pass changeme ;\
-	done
-	$(ES_PUT)/.kibana/config/$(ELASTIC_VERSION) -d '{"defaultIndex" : "metricbeat-*"}'
 
 venv: requirements.txt
 	test -d venv || virtualenv --python=python3.5 venv
