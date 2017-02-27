@@ -15,11 +15,18 @@ def test_binary_file_permissions(beat):
     assert beat.binary_file.mode == 0o0750
 
 
-def test_binary_file_has_network_capabilities(Command, beat):
+def test_net_raw_capability(Command, beat):
+    if beat.name in ['packetbeat', 'heartbeat']:
+        assert 'cap_net_raw' in beat.capabilities
+    else:
+        assert 'cap_net_raw' not in beat.capabilities
+
+
+def test_net_admin_capability(Command, beat):
     if beat.name == 'packetbeat':
-        caps = Command.check_output('getcap %s' % beat.binary_file.path)
-        assert 'cap_net_raw' in caps
-        assert 'cap_net_admin' in caps
+        assert 'cap_net_admin' in beat.capabilities
+    else:
+        assert 'cap_net_admin' not in beat.capabilities
 
 
 def test_script_file_permissions(File, Command, beat):

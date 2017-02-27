@@ -39,6 +39,9 @@ RUN mkdir data logs && \
 {%- if beat == 'packetbeat' %}
 RUN setcap cap_net_raw,cap_net_admin=eip {{ binary_file }}
 {% endif %}
+{%- if beat == 'heartbeat' %}
+RUN setcap cap_net_raw=eip {{ binary_file }}
+{% endif %}
 USER {{ beat }}
 
 CMD ["{{ beat }}", "-e"]
