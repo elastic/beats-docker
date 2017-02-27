@@ -65,6 +65,11 @@ $(BEATS):
           templates/Dockerfile.j2 > build/$@/Dockerfile
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
+push: all
+	for beat in $(BEATS); do \
+	  docker push $(REGISTRY)/beats/$$beat; \
+	done
+
 # Have each Beat install its default dashboards in Elasticsearch. Also set
 # Kibana's default index pattern as a convenience for `make demo`.
 import-dashboards: all
