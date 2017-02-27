@@ -2,16 +2,26 @@ metricbeat.modules:
 - module: system
   metricsets:
     - cpu
-    - filesystem
-    - fsstat
     - load
     - memory
     - network
     - process
-    - socket
   enabled: true
   period: 10s
   processes: ['.*']
+  cgroups: true  # Remove for versions >= 5.3
+
+# In order to capture short lived connections, use a shorter period for system/sockets.
+- module: system
+  metricsets: [socket]
+  period: 500ms
+  socket.reverse_lookup.enabled: true
+
+- module: system
+  period: 60s
+  metricsets: [filesystem, fsstat]
+  filters:
+    - drop_event.when.regexp.mount_point: '^(/hostfs)?/(sys|cgroup|proc|dev|etc|host|var/lib/docker)($|/)'
 
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
