@@ -23,6 +23,9 @@ metricbeat.modules:
   filters:
     - drop_event.when.regexp.mount_point: '^(/hostfs)?/(sys|cgroup|proc|dev|etc|host|var/lib/docker)($|/)'
 
+processors:
+- add_cloud_metadata:
+
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
   username: elastic

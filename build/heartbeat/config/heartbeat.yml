@@ -11,6 +11,8 @@ heartbeat.monitors:
     - elasticsearch
     - kibana
 
+processors:
+- add_cloud_metadata:
 
 output.elasticsearch:
   hosts: ['elasticsearch:9200']

@@ -29,6 +29,10 @@ packetbeat.protocols.mongodb:
 packetbeat.protocols.cassandra:
   ports: [9042]
 
+
+processors:
+- add_cloud_metadata:
+
 output.elasticsearch:
   hosts: ['elasticsearch:9200']
   username: elastic
