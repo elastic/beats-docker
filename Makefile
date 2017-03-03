@@ -29,7 +29,7 @@ lint: venv
 
 all: venv images docker-compose.yml
 
-docker-compose.yml: templates/docker-compose.yml.j2
+docker-compose.yml: venv templates/docker-compose.yml.j2
 	jinja2 \
 	  -D beats='$(BEATS)' \
 	  -D version=$(VERSION_TAG) \

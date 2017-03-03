@@ -68,7 +68,7 @@ services:
       command: >-
         /usr/share/metricbeat/scripts/import_dashboards
           -beat ""
-          -file /usr/share/metricbeat/beats-dashboards-5.2.1.zip
+          -file /usr/share/metricbeat/beats-dashboards-{{ version }}.zip
           -es http://elasticsearch:9200
           -user elastic
           -pass changeme
