@@ -12,8 +12,7 @@ RUN curl -Lso - {{ url }} | \
       tar zxf - -C /tmp && \
     mv /tmp/{{ beat }}-{{ version }}-linux-x86_64 {{ beat_home }}
 
-RUN curl -Lso {{ beat_home }}/beats-dashboards-{{ version }}.zip \
-      https://artifacts.elastic.co/downloads/beats/beats-dashboards/beats-dashboards-{{ version }}.zip
+RUN curl -Lso {{ beat_home }}/beats-dashboards-{{ version }}.zip {{ dashboards_url }}
 
 ENV PATH={{ beat_home }}:$PATH
 

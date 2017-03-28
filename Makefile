@@ -52,6 +52,7 @@ $(BEATS):
 	  -D beat=$@ \
 	  -D version=$(ELASTIC_VERSION) \
 	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
+	  -D dashboards_url=$(DOWNLOAD_URL_ROOT)/beats-dashboards/beats-dashboards-$(ELASTIC_VERSION).zip \
           templates/Dockerfile.j2 > build/$@/Dockerfile
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
