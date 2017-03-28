@@ -18,6 +18,8 @@ REGISTRY := docker.elastic.co
 # installed into our virtualenv with pip eg. `docker-compose`.
 export PATH := ./bin:./venv/bin:$(PATH)
 
+all: venv images docker-compose.yml test
+
 # Run the tests with testinfra (actually our custom wrapper at ./bin/testinfra)
 # REF: http://testinfra.readthedocs.io/en/latest/
 test: lint all
@@ -26,8 +28,6 @@ test: lint all
 
 lint: venv
 	flake8 test/
-
-all: venv images docker-compose.yml
 
 docker-compose.yml: venv
 	jinja2 \
@@ -57,7 +57,7 @@ $(BEATS):
 
 push: all
 	for beat in $(BEATS); do \
-	  docker push $(REGISTRY)/beats/$$beat; \
+	  docker push $(REGISTRY)/beats/$$beat:$(VERSION_TAG); \
 	done
 
 venv: requirements.txt
