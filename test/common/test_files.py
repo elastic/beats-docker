@@ -62,9 +62,16 @@ def test_log_dir_permissions(beat):
     assert beat.log_dir.mode == 0o0770
 
 
-def test_dashboard_archive_is_present(File, beat):
-    archive = File('%s/beats-dashboards-%s.zip' % (beat.home_dir.path, beat.version))
-    assert archive.exists
+def test_dashboard_archive_is_present(beat):
+    assert beat.dashboard_file.exists
+
+
+def test_dashboard_archive_is_a_reasonable_size(beat):
+    assert beat.dashboard_file.size > (100 * 1024)
+
+
+def test_dashboard_archive_is_a_zip_file(beat):
+    assert beat.dashboard_file.content[0:4] == b'PK\x03\x04'
 
 
 def test_template_locations(File, beat):
