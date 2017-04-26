@@ -3,10 +3,10 @@
 {% set binary_file = '%s/%s' % (beat_home, beat) -%}
 {% set config_file = '%s/%s.yml' % (beat_home, beat) -%}
 
-FROM ubuntu:16.04
+FROM centos:7
 MAINTAINER Elastic Docker Team <docker@elastic.co>
 
-RUN apt-get update && apt-get install -y curl && apt-get clean
+RUN yum install -y curl && yum clean all
 
 RUN curl -Lso - {{ url }} | \
       tar zxf - -C /tmp && \
@@ -19,13 +19,8 @@ ENV PATH={{ beat_home }}:$PATH
 COPY config/{{ beat }}.yml {{ config_file }}
 
 # Provide a non-root user.
-RUN addgroup --gid 1000 {{ beat }} && \
-    adduser --disabled-password \
-            --gecos={{ beat }} \
-            --uid=1000 \
-            --gid=1000 \
-            --home {{ beat_home }} \
-            {{ beat }}
+RUN groupadd --gid 1000 {{ beat }} && \
+    adduser -M --uid 1000 --gid 1000 --home {{ beat_home }} {{ beat }}
 
 WORKDIR {{ beat_home }}
 RUN mkdir data logs && \
