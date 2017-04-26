@@ -1,4 +1,4 @@
-from ..fixtures import beat
+from .fixtures import beat
 
 
 def test_config_file_passes_config_test(Command, beat):

@@ -1,4 +1,4 @@
-from ..fixtures import beat
+from .fixtures import beat
 
 
 def test_group_properties(Group, beat):

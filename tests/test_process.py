@@ -1,4 +1,4 @@
-from ..fixtures import beat
+from .fixtures import beat
 
 
 def test_process_is_pid_1(beat):
