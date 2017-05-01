@@ -20,7 +20,7 @@ COPY config/{{ beat }}.yml {{ config_file }}
 
 # Provide a non-root user.
 RUN groupadd --gid 1000 {{ beat }} && \
-    adduser -M --uid 1000 --gid 1000 --home {{ beat_home }} {{ beat }}
+    useradd -M --uid 1000 --gid 1000 --home {{ beat_home }} {{ beat }}
 
 WORKDIR {{ beat_home }}
 RUN mkdir data logs && \
