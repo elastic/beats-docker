@@ -103,6 +103,6 @@ workflow, so please refrain from submitting patches without test
 coverage. If you are not familiar with testing in Python, please
 raise an issue instead.
 
-This image is built on [Ubuntu 16.04][ubuntu-1604].
+This image is built on [CentOS 7][centos-7].
 
-[ubuntu-1604]: https://github.com/tianon/docker-brew-ubuntu-core/blob/188bcceb999c0c465b3053efefd4e1a03d3fc47e/xenial/Dockerfile
+[centos-7]: https://github.com/CentOS/sig-cloud-instance-images/blob/50281d86d6ed5c61975971150adfd0ede86423bb/docker/Dockerfile
