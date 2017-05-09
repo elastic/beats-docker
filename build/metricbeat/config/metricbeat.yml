@@ -9,7 +9,6 @@ metricbeat.modules:
   enabled: true
   period: 10s
   processes: ['.*']
-  cgroups: true  # Remove for versions >= 5.3
 
 # In order to capture short lived connections, use a shorter period for system/sockets.
 - module: system
