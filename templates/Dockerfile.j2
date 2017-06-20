@@ -6,7 +6,7 @@
 FROM centos:7
 MAINTAINER Elastic Docker Team <docker@elastic.co>
 
-RUN yum install -y curl && yum clean all
+RUN yum update -y && yum install -y curl && yum clean all
 
 RUN curl -Lso - {{ url }} | \
       tar zxf - -C /tmp && \
@@ -14,6 +14,7 @@ RUN curl -Lso - {{ url }} | \
 
 RUN curl -Lso {{ beat_home }}/beats-dashboards-{{ version }}.zip {{ dashboards_url }}
 
+ENV ELASTIC_CONTAINER true
 ENV PATH={{ beat_home }}:$PATH
 
 COPY config/{{ beat }}.yml {{ config_file }}
