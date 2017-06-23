@@ -16,7 +16,6 @@ A full build and test requires:
 * Docker
 * GNU Make
 * Python 3.5 with Virtualenv
-```
 
 ## Supported Docker versions
 
