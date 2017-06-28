@@ -56,9 +56,12 @@ $(BEATS):
           templates/Dockerfile.j2 > build/$@/Dockerfile
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
+# Push the images to the dedicated push endpoint at "push.docker.elastic.co"
 push: all
 	for beat in $(BEATS); do \
-	  docker push $(REGISTRY)/beats/$$beat:$(VERSION_TAG); \
+	  docker tag $(REGISTRY)/beats/$$beat:$(VERSION_TAG) push.$(REGISTRY)/beats/$$beat:$(VERSION_TAG); \
+	  docker push push.$(REGISTRY)/beats/$$beat:$(VERSION_TAG); \
+	  docker rmi push.$(REGISTRY)/beats/$$beat:$(VERSION_TAG); \
 	done
 
 venv: requirements.txt
