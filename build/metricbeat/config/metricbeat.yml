@@ -1,26 +1,6 @@
-metricbeat.modules:
-- module: system
-  metricsets:
-    - cpu
-    - load
-    - memory
-    - network
-    - process
-  enabled: true
-  period: 10s
-  processes: ['.*']
-
-# In order to capture short lived connections, use a shorter period for system/sockets.
-- module: system
-  metricsets: [socket]
-  period: 500ms
-  socket.reverse_lookup.enabled: true
-
-- module: system
-  period: 60s
-  metricsets: [filesystem, fsstat]
-  processors:
-    - drop_event.when.regexp.mount_point: '^(/hostfs)?/(sys|cgroup|proc|dev|etc|host|var/lib/docker)($|/)'
+metricbeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
 
 processors:
 - add_cloud_metadata:

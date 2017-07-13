@@ -1,0 +1,3 @@
+- input_type: log
+  paths:
+    - /mnt/log/*.log
