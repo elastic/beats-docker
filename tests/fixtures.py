@@ -10,16 +10,16 @@ except KeyError:
 
 class Beat:
     def __init__(self, name, process, home_dir, data_dir, config_dir, log_dir,
-                 binary_file, config_file, dashboard_file, capabilities):
+                 kibana_dir, binary_file, config_file, capabilities):
         self.name = name
         self.process = process
         self.home_dir = home_dir
         self.data_dir = data_dir
         self.config_dir = config_dir
         self.log_dir = log_dir
+        self.kibana_dir = kibana_dir
         self.binary_file = binary_file
         self.config_file = config_file
-        self.dashboard_file = dashboard_file
         self.version = version
         if 'STAGING_BUILD_NUM' in os.environ:
             self.tag = '%s-%s' % (version, os.environ['STAGING_BUILD_NUM'])
@@ -51,8 +51,8 @@ def beat(Process, File, TestinfraBackend, Command):
         data_dir=File(os.path.join(beat_home, 'data')),
         config_dir=File(beat_home),
         log_dir=File(os.path.join(beat_home, 'logs')),
+        kibana_dir=File(os.path.join(beat_home, 'kibana')),
         config_file=File(os.path.join(beat_home, '%s.yml' % beat_name)),
         binary_file=binary_file,
-        dashboard_file=File(os.path.join(beat_home, 'beats-dashboards-%s.zip' % version)),
         capabilities=capabilities,
     )

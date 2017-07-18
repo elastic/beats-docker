@@ -56,19 +56,13 @@ def test_data_dir_permissions(beat):
     assert beat.data_dir.mode == 0o0770
 
 
+def test_kibana_dir_permissions(beat):
+    assert beat.kibana_dir.user == 'root'
+    assert beat.kibana_dir.group == beat.name
+    assert beat.kibana_dir.mode == 0o0750
+
+
 def test_log_dir_permissions(beat):
     assert beat.log_dir.user == 'root'
     assert beat.log_dir.group == beat.name
     assert beat.log_dir.mode == 0o0770
-
-
-def test_dashboard_archive_is_present(beat):
-    assert beat.dashboard_file.exists
-
-
-def test_dashboard_archive_is_a_reasonable_size(beat):
-    assert beat.dashboard_file.size > (100 * 1024)
-
-
-def test_dashboard_archive_is_a_zip_file(beat):
-    assert beat.dashboard_file.content[0:4] == b'PK\x03\x04'

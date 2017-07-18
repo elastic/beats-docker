@@ -12,7 +12,6 @@ RUN curl -Lso - {{ url }} | \
       tar zxf - -C /tmp && \
     mv /tmp/{{ beat }}-{{ version }}-linux-x86_64 {{ beat_home }}
 
-RUN curl -Lso {{ beat_home }}/beats-dashboards-{{ version }}.zip {{ dashboards_url }}
 
 ENV ELASTIC_CONTAINER true
 ENV PATH={{ beat_home }}:$PATH

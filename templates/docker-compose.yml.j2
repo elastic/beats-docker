@@ -58,6 +58,8 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', '-u', 'docker:changeme', 'http://localhost:5601']
 
   import_dashboards:
       image: {{ registry }}/beats/metricbeat:{{ version }}
@@ -66,14 +68,15 @@ services:
          - beats
       # Using -beat "" causes it to install all dashboards in the zip and not just the metricbeat ones.
       command: >-
-        /usr/share/metricbeat/scripts/import_dashboards
-          -beat ""
-          -file /usr/share/metricbeat/beats-dashboards-{{ version }}.zip
-          -es http://elasticsearch:9200
-          -user elastic
-          -pass changeme
+        /usr/share/metricbeat/metricbeat setup --dashboards
+        -E setup.kibana.host=kibana:5601
+        -E setup.kibana.username=docker
+        -E setup.kibana.password=changeme
+
       depends_on:
         elasticsearch:
+          condition: service_healthy
+        kibana:
           condition: service_healthy
 
   set_default_index_pattern:
