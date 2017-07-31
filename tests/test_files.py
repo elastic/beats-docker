@@ -72,15 +72,3 @@ def test_dashboard_archive_is_a_reasonable_size(beat):
 
 def test_dashboard_archive_is_a_zip_file(beat):
     assert beat.dashboard_file.content[0:4] == b'PK\x03\x04'
-
-
-def test_template_locations(File, beat):
-    template_names = [
-        '%s.template.json' % beat.name,
-        '%s.template-es2x.json' % beat.name
-    ]
-    for name in template_names:
-        template = File('%s/%s' % (beat.home_dir.path, name))
-        symlink = File('%s/%s' % (beat.config_dir.path, name))
-        assert template.exists
-        assert symlink.linked_to == template.path
