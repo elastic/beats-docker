@@ -19,7 +19,7 @@ metricbeat.modules:
 - module: system
   period: 60s
   metricsets: [filesystem, fsstat]
-  filters:
+  processors:
     - drop_event.when.regexp.mount_point: '^(/hostfs)?/(sys|cgroup|proc|dev|etc|host|var/lib/docker)($|/)'
 
 processors:
