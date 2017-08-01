@@ -1,6 +1,7 @@
 venv
 build/*/Dockerfile
 build/*/config/*.sh
+build/*/docker-entrypoint
 docker-compose.yml
 .cache
 **/__pycache__

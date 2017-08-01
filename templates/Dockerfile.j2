@@ -19,6 +19,9 @@ ENV PATH={{ beat_home }}:$PATH
 
 COPY config/{{ beat }}.yml {{ config_file }}
 
+# Add entrypoint wrapper script
+ADD docker-entrypoint /usr/local/bin
+
 # Provide a non-root user.
 RUN groupadd --gid 1000 {{ beat }} && \
     useradd -M --uid 1000 --gid 1000 --home {{ beat_home }} {{ beat }}
@@ -39,4 +42,5 @@ RUN setcap cap_net_raw=eip {{ binary_file }}
 {% endif %}
 USER {{ beat }}
 
-CMD ["{{ beat }}", "-e"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
+CMD ["-e"]

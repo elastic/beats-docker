@@ -55,6 +55,10 @@ $(BEATS):
 	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
 	  -D dashboards_url=$(DOWNLOAD_URL_ROOT)/beats-dashboards/beats-dashboards-$(ELASTIC_VERSION).zip \
           templates/Dockerfile.j2 > build/$@/Dockerfile
+	jinja2 \
+	  -D beat=$@ \
+	  templates/docker-entrypoint.j2 > build/$@/docker-entrypoint
+	chmod +x build/$@/docker-entrypoint
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
 # Push the images to the dedicated push endpoint at "push.docker.elastic.co"
@@ -72,6 +76,6 @@ venv: requirements.txt
 
 clean: venv
 	docker-compose down -v || true
-	rm -f docker-compose.yml build/*/Dockerfile build/*/config/*.sh
+	rm -f docker-compose.yml build/*/Dockerfile build/*/config/*.sh build/*/docker-entrypoint
 	rm -rf venv
 	find . -name __pycache__ | xargs rm -rf
