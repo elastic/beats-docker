@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# A wrapper for `pytest` to handle the appropriate testinfra arguments.
+
+source venv/bin/activate
+pytest --connection=docker --hosts=`cat beats.txt | tr "\n" ',' | head -c -1` $@

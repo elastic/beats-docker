@@ -24,7 +24,7 @@ all: venv images docker-compose.yml test
 # Run the tests with testinfra (actually our custom wrapper at ./bin/testinfra)
 # REF: http://testinfra.readthedocs.io/en/latest/
 test: lint all
-	testinfra -v tests/
+	bin/pytest -v tests/
 .PHONY: test
 
 lint: venv

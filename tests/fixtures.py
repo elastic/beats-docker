@@ -8,51 +8,38 @@ except KeyError:
     version = run('./bin/elastic-version', stdout=PIPE).stdout.decode().strip()
 
 
-class Beat:
-    def __init__(self, name, process, home_dir, data_dir, config_dir, log_dir,
-                 kibana_dir, binary_file, config_file, capabilities):
-        self.name = name
-        self.process = process
-        self.home_dir = home_dir
-        self.data_dir = data_dir
-        self.config_dir = config_dir
-        self.log_dir = log_dir
-        self.kibana_dir = kibana_dir
-        self.binary_file = binary_file
-        self.config_file = config_file
-        self.version = version
-        if 'STAGING_BUILD_NUM' in os.environ:
-            self.tag = '%s-%s' % (version, os.environ['STAGING_BUILD_NUM'])
-        else:
-            self.tag = version
-        self.capabilities = capabilities
-
-
 @pytest.fixture()
 def beat(Process, File, TestinfraBackend, Command):
-    # We name the container after the Beat, so asking for the hostname
-    # lets us know which Beat we are testing.
-    beat_name = TestinfraBackend.get_hostname()
-    beat_home = os.path.join(os.sep, 'usr', 'share', beat_name)
-    binary_file = File(os.path.join(beat_home, beat_name))
+    class Beat:
+        def __init__(self):
+            # We name the container after the Beat, so asking for the hostname
+            # lets us know which Beat we are testing.
+            name = TestinfraBackend.get_hostname()
+            home = os.path.join(os.sep, 'usr', 'share', name)
 
-    capability_string = Command.check_output('getcap %s' % binary_file.path)
-    # Like: '/usr/share/packetbeat/packetbeat = cap_net_admin,cap_net_raw+eip'
-    if capability_string:
-        capabilities = capability_string.split()[-1].split('+')[0].split(',')
-        # Like: ['cap_net_raw', 'cap_net_admin']
-    else:
-        capabilities = []
+            self.name = name
+            self.process = Process.get(comm=name)
+            self.home_dir = File(home)
+            self.data_dir = File(os.path.join(home, 'data'))
+            self.config_dir = File(home)
+            self.log_dir = File(os.path.join(home, 'logs'))
+            self.kibana_dir = File(os.path.join(home, 'kibana'))
+            self.binary_file = File(os.path.join(home, name))
+            self.config_file = File(os.path.join(home, '%s.yml' % name))
+            self.version = version
 
-    return Beat(
-        name=beat_name,
-        process=Process.get(comm=beat_name),
-        home_dir=File(beat_home),
-        data_dir=File(os.path.join(beat_home, 'data')),
-        config_dir=File(beat_home),
-        log_dir=File(os.path.join(beat_home, 'logs')),
-        kibana_dir=File(os.path.join(beat_home, 'kibana')),
-        config_file=File(os.path.join(beat_home, '%s.yml' % beat_name)),
-        binary_file=binary_file,
-        capabilities=capabilities,
-    )
+            # What Linux capabilities does the binary file have?
+            capability_string = Command.check_output('getcap %s' % self.binary_file.path)
+            # Like: '/usr/share/packetbeat/packetbeat = cap_net_admin,cap_net_raw+eip'
+            if capability_string:
+                self.capabilities = capability_string.split()[-1].split('+')[0].split(',')
+                # Like: ['cap_net_raw', 'cap_net_admin']
+            else:
+                self.capabilities = []
+
+            if 'STAGING_BUILD_NUM' in os.environ:
+                self.tag = '%s-%s' % (version, os.environ['STAGING_BUILD_NUM'])
+            else:
+                self.tag = version
+
+    return Beat()
