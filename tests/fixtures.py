@@ -21,6 +21,10 @@ class Beat:
         self.config_file = config_file
         self.dashboard_file = dashboard_file
         self.version = version
+        if 'STAGING_BUILD_NUM' in os.environ:
+            self.tag = '%s-%s' % (version, os.environ['STAGING_BUILD_NUM'])
+        else:
+            self.tag = version
         self.capabilities = capabilities
 
 

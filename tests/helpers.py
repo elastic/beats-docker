@@ -3,7 +3,7 @@ import os
 
 
 def run(beat, command):
-    image = 'docker.elastic.co/beats/%s:%s' % (beat.name, beat.version)
+    image = 'docker.elastic.co/beats/%s:%s' % (beat.name, beat.tag)
 
     caps = ''
     if beat.name == 'packetbeat':
