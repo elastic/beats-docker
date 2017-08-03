@@ -56,6 +56,7 @@ $(BEATS):
           templates/Dockerfile.j2 > build/$@/Dockerfile
 	jinja2 \
 	  -D beat=$@ \
+	  -D version=$(ELASTIC_VERSION) \
 	  templates/docker-entrypoint.j2 > build/$@/docker-entrypoint
 	chmod +x build/$@/docker-entrypoint
 	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
