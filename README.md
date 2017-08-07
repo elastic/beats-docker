@@ -5,11 +5,19 @@
 This repository contains the official [Beats][beats] Docker images from
 [Elastic][elastic].
 
-Documentation can be found on the [Elastic website][docs]
+Documentation can be found on the [Elastic website][elastic]:
+
+* [filebeat][filebeat]
+* [heartbeat][heartbeat]
+* [metricbeat][metricbeat]
+* [packetbeat][packetbeat]
 
 [beats]: https://www.elastic.co/products/beats
 [elastic]: https://www.elastic.co/
-[docs]: https://www.elastic.co/guide/en/logstash/current/docker.html
+[filebeat]: https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html
+[heartbeat]: https://www.elastic.co/guide/en/beats/heartbeat/current/running-on-docker.html
+[metricbeat]: https://www.elastic.co/guide/en/beats/metricbeat/current/running-on-docker.html
+[packetbeat]: https://www.elastic.co/guide/en/beats/packetbeat/current/running-on-docker.html
 
 ## Requirements
 A full build and test requires:
