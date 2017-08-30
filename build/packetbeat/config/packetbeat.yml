@@ -1,5 +1,9 @@
 packetbeat.interfaces.device: any
 
+packetbeat.flows:
+  timeout: 30s
+  period: 10s
+
 packetbeat.protocols.dns:
   ports: [53]
   include_authorities: true
