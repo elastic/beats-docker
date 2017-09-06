@@ -1,3 +1,4 @@
+auditbeat
 filebeat
 heartbeat
 metricbeat

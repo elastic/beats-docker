@@ -41,7 +41,10 @@ RUN setcap cap_net_raw,cap_net_admin=eip {{ binary_file }}
 {%- if beat == 'heartbeat' %}
 RUN setcap cap_net_raw=eip {{ binary_file }}
 {% endif %}
+{%- if beat == 'auditbeat' %}
+USER root
+{% else %}
 USER {{ beat }}
-
+{% endif %}
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
 CMD ["-e"]
