@@ -29,7 +29,7 @@ RUN mkdir data logs && \
     chown -R root:{{ beat }} . && \
     find {{ beat_home }} -type d -exec chmod 0750 {} \; && \
     find {{ beat_home }} -type f -exec chmod 0640 {} \; && \
-    chmod 0750 {{ binary_file }} scripts/* && \
+    chmod 0750 {{ binary_file }} && \
     {%- if beat == 'filebeat' or beat == 'metricbeat' %}
     chmod 0770 modules.d && \
     {% endif %}
