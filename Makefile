@@ -6,14 +6,15 @@ endif
 
 ifdef STAGING_BUILD_NUM
 export VERSION_TAG := $(ELASTIC_VERSION)-$(STAGING_BUILD_NUM)
-DOWNLOAD_URL_ROOT := https://staging.elastic.co/$(VERSION_TAG)/downloads/beats
+DOWNLOAD_URL_ROOT ?= https://staging.elastic.co/$(VERSION_TAG)/downloads/beats
 else
 export VERSION_TAG := $(ELASTIC_VERSION)
-DOWNLOAD_URL_ROOT := https://artifacts.elastic.co/downloads/beats
+DOWNLOAD_URL_ROOT ?= https://artifacts.elastic.co/downloads/beats
 endif
 
 BEATS := $(shell cat beats.txt)
-REGISTRY := docker.elastic.co
+REGISTRY ?= docker.elastic.co
+HTTPD ?= beats-docker-artifact-server
 
 # Make sure we run local versions of everything, particularly commands
 # installed into our virtualenv with pip eg. `docker-compose`.
@@ -46,7 +47,7 @@ demo: all
 
 # Build images for all the Beats, generate the Dockerfiles as we go.
 images: $(BEATS)
-$(BEATS):
+$(BEATS): venv
 	mkdir -p build/$@/config
 	touch build/$@/config/$@.yml
 	jinja2 \
@@ -59,7 +60,26 @@ $(BEATS):
 	  -D version=$(ELASTIC_VERSION) \
 	  templates/docker-entrypoint.j2 > build/$@/docker-entrypoint
 	chmod +x build/$@/docker-entrypoint
-	docker build --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
+	docker build $(DOCKER_FLAGS) --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
+
+local-httpd:
+	docker run --rm -d --name=$(HTTPD) --network=host \
+	  -v $(ARTIFACTS_DIR):/mnt \
+	  python:3 bash -c 'cd /mnt && python3 -m http.server'
+	timeout 120 bash -c 'until curl -s localhost:8000 > /dev/null; do sleep 1; done'
+
+release-manager-snapshot: local-httpd
+	ELASTIC_VERSION=$(ELASTIC_VERSION)-SNAPSHOT \
+	  DOWNLOAD_URL_ROOT=http://localhost:8000/beats/build/upload \
+	  DOCKER_FLAGS='--network=host' \
+	  make images || (docker kill $(HTTPD); false)
+	-docker kill $(HTTPD)
+release-manager-release: local-httpd
+	ELASTIC_VERSION=$(ELASTIC_VERSION) \
+	  DOWNLOAD_URL_ROOT=http://localhost:8000/beats/build/upload \
+	  DOCKER_FLAGS='--network=host' \
+	  make images || (docker kill $(HTTPD); false)
+	-docker kill $(HTTPD)
 
 # Push the images to the dedicated push endpoint at "push.docker.elastic.co"
 push: all
