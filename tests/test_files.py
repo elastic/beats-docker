@@ -29,15 +29,6 @@ def test_net_admin_capability(Command, beat):
         assert 'cap_net_admin' not in beat.capabilities
 
 
-def test_script_file_permissions(File, Command, beat):
-    script_paths = Command.check_output('find %s/scripts/' % beat.home_dir.path).strip().split()
-    for path in script_paths:
-        script = File(path)
-        assert script.user == 'root'
-        assert script.group == beat.name
-        assert script.mode == 0o0750
-
-
 def test_config_file_permissions(beat):
     assert beat.config_file.user == 'root'
     assert beat.config_file.group == beat.name
