@@ -3,5 +3,6 @@ build/*/Dockerfile
 build/*/config/*.sh
 build/*/docker-entrypoint
 docker-compose.yml
+snapshots
 .cache
 **/__pycache__
