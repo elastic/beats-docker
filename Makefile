@@ -81,6 +81,16 @@ release-manager-release: local-httpd
 	  make images || (docker kill $(HTTPD); false)
 	-docker kill $(HTTPD)
 
+# Build images from the latest snapshots on snapshots.elastic.co
+from-snapshot:
+	rm -rf ./snapshots
+	for beat in $(BEATS); do \
+	  mkdir -p snapshots/beats/build/upload/$$beat; \
+	  (cd snapshots/beats/build/upload/$$beat && \
+	  wget https://snapshots.elastic.co/downloads/beats/$$beat/$$beat-$(ELASTIC_VERSION)-SNAPSHOT-linux-x86_64.tar.gz); \
+	done
+	ARTIFACTS_DIR=$$PWD/snapshots make release-manager-snapshot
+
 # Push the images to the dedicated push endpoint at "push.docker.elastic.co"
 push: all
 	for beat in $(BEATS); do \
