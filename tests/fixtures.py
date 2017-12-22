@@ -2,10 +2,7 @@ import os
 import pytest
 from subprocess import run, PIPE
 
-try:
-    version = os.environ['ELASTIC_VERSION']
-except KeyError:
-    version = run('./bin/elastic-version', stdout=PIPE).stdout.decode().strip()
+version = run('./bin/elastic-version', stdout=PIPE).stdout.decode().strip()
 
 
 @pytest.fixture()
@@ -26,7 +23,7 @@ def beat(Process, File, TestinfraBackend, Command):
             self.kibana_dir = File(os.path.join(home, 'kibana'))
             self.binary_file = File(os.path.join(home, name))
             self.config_file = File(os.path.join(home, '%s.yml' % name))
-            self.version = version
+            self.version = version.replace('-SNAPSHOT', '')
 
             # What Linux capabilities does the binary file have?
             capability_string = Command.check_output('getcap %s' % self.binary_file.path)
