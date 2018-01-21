@@ -12,6 +12,12 @@ services:
       - /var/log:/mnt/log:ro
     {%- endif %}
 
+    {%- if beat == 'auditbeat' %}
+    cap_add:
+      - AUDIT_CONTROL
+    pid: host
+    {%- endif %}
+
     {%- if beat == 'packetbeat' %}
     cap_add:
       - NET_RAW
