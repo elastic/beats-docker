@@ -2,7 +2,10 @@ from .fixtures import beat
 
 
 def test_process_is_pid_1(beat):
-    assert beat.process.pid == 1
+    if beat.name == 'auditbeat':
+        assert beat.process.pid > 1
+    else:
+        assert beat.process.pid == 1
 
 
 def test_process_is_running_as_the_correct_user(beat):
