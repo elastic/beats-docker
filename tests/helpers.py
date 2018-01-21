@@ -12,6 +12,9 @@ def run(beat, command):
     if beat.name == 'heartbeat':
         caps = '--cap-add net_raw'
 
+    if beat.name == 'auditbeat':
+        caps = '--cap-add audit_control --pid=host'
+
     cli = 'docker run %s --rm --interactive %s %s' % (caps, image, command)
     result = subprocess.run(cli, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     result.stdout = result.stdout.rstrip()
