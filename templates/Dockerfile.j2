@@ -30,9 +30,9 @@ RUN mkdir data logs && \
     find {{ beat_home }} -type d -exec chmod 0750 {} \; && \
     find {{ beat_home }} -type f -exec chmod 0640 {} \; && \
     chmod 0750 {{ binary_file }} && \
-    {%- if beat == 'filebeat' or beat == 'metricbeat' %}
+    {%- if beat == 'filebeat' or beat == 'metricbeat' -%}
     chmod 0770 modules.d && \
-    {% endif %}
+    {% endif -%}
     chmod 0770 data logs
 
 {%- if beat == 'packetbeat' %}
