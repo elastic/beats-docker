@@ -1,8 +1,8 @@
 venv
-build/*/Dockerfile
+build/*/Dockerfile*
 build/*/config/*.sh
 build/*/docker-entrypoint
-docker-compose.yml
+docker-compose*.yml
 snapshots
 .cache
 **/__pycache__

@@ -16,6 +16,9 @@ BEATS := $(shell cat beats.txt)
 REGISTRY ?= docker.elastic.co
 HTTPD ?= beats-docker-artifact-server
 
+IMAGE_FLAVORS ?= oss full
+FIGLET := pyfiglet -w 160 -f puffy
+
 # Make sure we run local versions of everything, particularly commands
 # installed into our virtualenv with pip eg. `docker-compose`.
 export PATH := ./bin:./venv/bin:$(PATH)
@@ -25,18 +28,24 @@ all: venv images docker-compose.yml test
 # Run the tests with testinfra (actually our custom wrapper at ./bin/testinfra)
 # REF: http://testinfra.readthedocs.io/en/latest/
 test: lint docker-compose.yml
-	bin/pytest -v tests/
+	$(foreach FLAVOR, $(IMAGE_FLAVORS), \
+	  $(FIGLET) "test: $(FLAVOR)"; \
+	  ./bin/pytest -v --image-flavor=$(FLAVOR) tests/; \
+	)
 .PHONY: test
 
 lint: venv
 	flake8 tests/
 
 docker-compose.yml: venv
+	$(foreach FLAVOR, $(IMAGE_FLAVORS), \
 	jinja2 \
 	  -D beats='$(BEATS)' \
 	  -D version=$(VERSION_TAG) \
 	  -D registry=$(REGISTRY) \
-	  templates/docker-compose.yml.j2 > docker-compose.yml
+	  -D image_flavor='$(FLAVOR)' \
+	  templates/docker-compose.yml.j2 > docker-compose-$(FLAVOR).yml; \
+	)
 .PHONY: docker-compose.yml
 
 # Bring up a full-stack demo with Elasticsearch, Kibana and all the Unix Beats.
@@ -53,14 +62,22 @@ $(BEATS): venv
 	jinja2 \
 	  -D beat=$@ \
 	  -D version=$(ELASTIC_VERSION) \
-	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
-          templates/Dockerfile.j2 > build/$@/Dockerfile
+	  templates/docker-entrypoint.j2 > build/$@/docker-entrypoint
+	chmod +x build/$@/docker-entrypoint
+
 	jinja2 \
 	  -D beat=$@ \
 	  -D version=$(ELASTIC_VERSION) \
-	  templates/docker-entrypoint.j2 > build/$@/docker-entrypoint
-	chmod +x build/$@/docker-entrypoint
-	docker build $(DOCKER_FLAGS) --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
+	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
+	  templates/Dockerfile.j2 > build/$@/Dockerfile-full
+	docker build $(DOCKER_FLAGS) -f build/$@/Dockerfile-full --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
+
+	jinja2 \
+	  -D beat=$@ \
+	  -D version=$(ELASTIC_VERSION) \
+	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-oss-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
+	  templates/Dockerfile.j2 > build/$@/Dockerfile-oss
+	docker build $(DOCKER_FLAGS) -f build/$@/Dockerfile-oss --tag=$(REGISTRY)/beats/$@-oss:$(VERSION_TAG) build/$@
 
 local-httpd:
 	docker run --rm -d --name=$(HTTPD) --network=host \
