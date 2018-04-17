@@ -3,3 +3,4 @@ flake8==3.3.0
 jinja2-cli[yaml]==0.6.0
 jinja2==2.9.5
 testinfra==1.5.3
+pip<10
