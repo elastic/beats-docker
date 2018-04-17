@@ -6,3 +6,4 @@ docker-compose.yml
 snapshots
 .cache
 **/__pycache__
+.pytest_cache
