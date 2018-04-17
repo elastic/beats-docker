@@ -4,3 +4,4 @@ build/*/config/*.sh
 docker-compose.yml
 .cache
 **/__pycache__
+.pytest_cache
