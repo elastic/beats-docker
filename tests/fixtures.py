@@ -39,4 +39,10 @@ def beat(Process, File, TestinfraBackend, Command):
             else:
                 self.tag = version
 
+            flavor = pytest.config.getoption('--image-flavor')
+            if flavor != 'full':
+                self.image = 'docker.elastic.co/beats/%s-%s:%s' % (self.name, flavor, self.tag)
+            else:
+                self.image = 'docker.elastic.co/beats/%s:%s' % (self.name, self.tag)
+
     return Beat()

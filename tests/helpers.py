@@ -3,7 +3,6 @@ import os
 
 
 def run(beat, command):
-    image = 'docker.elastic.co/beats/%s:%s' % (beat.name, beat.tag)
 
     caps = ''
     if beat.name == 'packetbeat':
@@ -15,7 +14,7 @@ def run(beat, command):
     if beat.name == 'auditbeat':
         caps = '--cap-add audit_control --pid=host'
 
-    cli = 'docker run %s --rm --interactive %s %s' % (caps, image, command)
+    cli = 'docker run %s --rm --interactive %s %s' % (caps, beat.image, command)
     result = subprocess.run(cli, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     result.stdout = result.stdout.rstrip()
     return result
