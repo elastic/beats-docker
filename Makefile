@@ -104,7 +104,8 @@ from-snapshot:
 	for beat in $(BEATS); do \
 	  mkdir -p snapshots/beats/build/upload/$$beat; \
 	  (cd snapshots/beats/build/upload/$$beat && \
-	  wget https://snapshots.elastic.co/downloads/beats/$$beat/$$beat-$(ELASTIC_VERSION)-SNAPSHOT-linux-x86_64.tar.gz); \
+	  wget https://snapshots.elastic.co/downloads/beats/$$beat/$$beat-$(ELASTIC_VERSION)-SNAPSHOT-linux-x86_64.tar.gz && \
+	  wget https://snapshots.elastic.co/downloads/beats/$$beat/$$beat-oss-$(ELASTIC_VERSION)-SNAPSHOT-linux-x86_64.tar.gz); \
 	done
 	ARTIFACTS_DIR=$$PWD/snapshots make release-manager-snapshot
 
