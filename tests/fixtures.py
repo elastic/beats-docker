@@ -1,5 +1,6 @@
 import os
 import pytest
+import datetime
 from subprocess import run, PIPE
 
 version = run('./bin/elastic-version', stdout=PIPE).stdout.decode().strip()
@@ -12,10 +13,20 @@ def beat(Process, File, TestinfraBackend, Command):
             # We name the container after the Beat, so asking for the hostname
             # lets us know which Beat we are testing.
             name = TestinfraBackend.get_hostname()
-            home = os.path.join(os.sep, 'usr', 'share', name)
-
             self.name = name
-            self.process = Process.get(comm=name)
+
+            # Auditbeat might already be running on this system and in the top-level
+            # PID namespace too. We can't just assume that the first Auditbeat process
+            # we see is the one we are interested in. A better assumption is that the
+            # _newest_ process is the one we are interested in.
+            processes = {}
+            for process in Process.filter(comm=name):
+                start_time = datetime.datetime.strptime(process['lstart'], "%a %b %d %H:%M:%S %Y")
+                processes[start_time] = process
+            newest_process = processes[max(processes.keys())]
+            self.process = newest_process
+
+            home = os.path.join(os.sep, 'usr', 'share', name)
             self.home_dir = File(home)
             self.data_dir = File(os.path.join(home, 'data'))
             self.config_dir = File(home)
