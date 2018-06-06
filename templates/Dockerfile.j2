@@ -3,13 +3,12 @@
 {% set binary_file = '%s/%s' % (beat_home, beat) -%}
 
 FROM centos:7
-MAINTAINER Elastic Docker Team <docker@elastic.co>
 
 RUN yum update -y && yum install -y curl && yum clean all
 
 RUN curl -Lso - {{ url }} | \
       tar zxf - -C /tmp && \
-    mv /tmp/{{ beat }}-{{ version }}-linux-x86_64 {{ beat_home }}
+    mv /tmp/{{ beat }}-{{ elastic_version }}-linux-x86_64 {{ beat_home }}
 
 
 ENV ELASTIC_CONTAINER true
@@ -46,5 +45,18 @@ USER root
 {% else %}
 USER {{ beat }}
 {% endif %}
+
+LABEL org.label-schema.schema-version="1.0" \
+  org.label-schema.vendor="Elastic" \
+  org.label-schema.name="{{ beat }}" \
+  org.label-schema.version="{{ elastic_version }}" \
+  org.label-schema.url="https://www.elastic.co/products/beats/{{ beat }}" \
+  org.label-schema.vcs-url="https://github.com/elastic/beats-docker" \
+{% if image_flavor == 'oss' -%}
+  license="Apache-2.0"
+{% else -%}
+  license="Elastic License"
+{% endif -%}
+
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint"]
 CMD ["-e"]
