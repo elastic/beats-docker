@@ -61,21 +61,23 @@ $(BEATS): venv
 	touch build/$@/config/$@.yml
 	jinja2 \
 	  -D beat=$@ \
-	  -D version=$(ELASTIC_VERSION) \
+	  -D elastic_version=$(ELASTIC_VERSION) \
 	  templates/docker-entrypoint.j2 > build/$@/docker-entrypoint
 	chmod +x build/$@/docker-entrypoint
 
 	jinja2 \
 	  -D beat=$@ \
-	  -D version=$(ELASTIC_VERSION) \
+	  -D elastic_version=$(ELASTIC_VERSION) \
 	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
+	  -D image_flavor=full \
 	  templates/Dockerfile.j2 > build/$@/Dockerfile-full
 	docker build $(DOCKER_FLAGS) -f build/$@/Dockerfile-full --tag=$(REGISTRY)/beats/$@:$(VERSION_TAG) build/$@
 
 	jinja2 \
 	  -D beat=$@ \
-	  -D version=$(ELASTIC_VERSION) \
+	  -D elastic_version=$(ELASTIC_VERSION) \
 	  -D url=$(DOWNLOAD_URL_ROOT)/$@/$@-oss-$(ELASTIC_VERSION)-linux-x86_64.tar.gz \
+	  -D image_flavor=oss \
 	  templates/Dockerfile.j2 > build/$@/Dockerfile-oss
 	docker build $(DOCKER_FLAGS) -f build/$@/Dockerfile-oss --tag=$(REGISTRY)/beats/$@-oss:$(VERSION_TAG) build/$@
 
