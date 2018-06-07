@@ -58,6 +58,6 @@ def beat(Process, File, TestinfraBackend, Command):
                 self.image = 'docker.elastic.co/beats/%s:%s' % (self.name, self.tag)
 
             self.docker_metadata = json.loads(
-                run(['docker', 'inspect', self.image], stdout=PIPE).stdout)[0]
+                run(['docker', 'inspect', self.image], stdout=PIPE).stdout.decode())[0]
 
     return Beat()
