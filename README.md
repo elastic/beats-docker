@@ -30,17 +30,17 @@ A full build and test requires:
 The images have been tested on Docker 17.03.1-ce
 
 ## Running a build
-To build images with the latest nightly snapshots of Beats, run:
-```
-make from-snapshot
-```
-
 To build images with a released version of Beats, check out the corresponding
 branch for the version, and run Make while specifying the exact version desired.
 Like this:
 ```
-git checkout 6.2
-ELASTIC_VERSION=6.2.4 make
+git checkout 6.3
+ELASTIC_VERSION=6.3.1 make
+```
+
+To build images with the latest nightly snapshots of Beats, run:
+```
+make from-snapshot
 ```
 
 ## Contributing, issues and testing
