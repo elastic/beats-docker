@@ -12,6 +12,8 @@ export VERSION_TAG := $(ELASTIC_VERSION)
 DOWNLOAD_URL_ROOT ?= https://artifacts.elastic.co/downloads/beats
 endif
 
+BUILD_ARTIFACT_PATH ?= beats/build/distributions
+
 BEATS := $(shell cat beats.txt)
 REGISTRY ?= docker.elastic.co
 HTTPD ?= beats-docker-artifact-server
@@ -89,13 +91,13 @@ local-httpd:
 
 release-manager-snapshot: local-httpd
 	ELASTIC_VERSION=$(ELASTIC_VERSION)-SNAPSHOT \
-	  DOWNLOAD_URL_ROOT=http://localhost:8000/beats/build/upload \
+	  DOWNLOAD_URL_ROOT=http://localhost:8000/$(BUILD_ARTIFACT_PATH) \
 	  DOCKER_FLAGS='--network=host' \
 	  make images || (docker kill $(HTTPD); false)
 	-docker kill $(HTTPD)
 release-manager-release: local-httpd
 	ELASTIC_VERSION=$(ELASTIC_VERSION) \
-	  DOWNLOAD_URL_ROOT=http://localhost:8000/beats/build/upload \
+	  DOWNLOAD_URL_ROOT=http://localhost:8000/$(BUILD_ARTIFACT_PATH) \
 	  DOCKER_FLAGS='--network=host' \
 	  make images || (docker kill $(HTTPD); false)
 	-docker kill $(HTTPD)
@@ -104,8 +106,8 @@ release-manager-release: local-httpd
 from-snapshot:
 	rm -rf ./snapshots
 	for beat in $(BEATS); do \
-	  mkdir -p snapshots/beats/build/upload/$$beat; \
-	  (cd snapshots/beats/build/upload/$$beat && \
+	  mkdir -p snapshots/$(BUILD_ARTIFACT_PATH)/$$beat; \
+	  (cd snapshots/$(BUILD_ARTIFACT_PATH)/$$beat && \
 	  wget https://snapshots.elastic.co/downloads/beats/$$beat/$$beat-$(ELASTIC_VERSION)-SNAPSHOT-linux-x86_64.tar.gz && \
 	  wget https://snapshots.elastic.co/downloads/beats/$$beat/$$beat-oss-$(ELASTIC_VERSION)-SNAPSHOT-linux-x86_64.tar.gz); \
 	done
