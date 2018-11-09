@@ -37,6 +37,7 @@ RUN setcap cap_net_raw,cap_net_admin=eip {{ binary_file }}
 {%- if beat == 'heartbeat' %}
 RUN setcap cap_net_raw=eip {{ binary_file }}
 {% endif %}
-USER {{ beat }}
+
+USER 1000
 
 CMD ["{{ beat }}", "-e"]
