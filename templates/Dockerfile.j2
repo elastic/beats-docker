@@ -43,7 +43,7 @@ RUN setcap cap_net_raw=eip {{ binary_file }}
 {%- if beat == 'auditbeat' %}
 USER root
 {% else %}
-USER {{ beat }}
+USER 1000
 {% endif %}
 
 LABEL org.label-schema.schema-version="1.0" \
