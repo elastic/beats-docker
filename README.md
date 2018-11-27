@@ -8,6 +8,7 @@ Documentation can be found on the [Elastic website][elastic]:
 * [auditbeat][auditbeat]
 * [filebeat][filebeat]
 * [heartbeat][heartbeat]
+* [journalbeat][journalbeat]
 * [metricbeat][metricbeat]
 * [packetbeat][packetbeat]
 
@@ -16,6 +17,7 @@ Documentation can be found on the [Elastic website][elastic]:
 [auditbeat]: https://www.elastic.co/guide/en/beats/auditbeat/current/running-on-docker.html
 [filebeat]: https://www.elastic.co/guide/en/beats/filebeat/current/running-on-docker.html
 [heartbeat]: https://www.elastic.co/guide/en/beats/heartbeat/current/running-on-docker.html
+[journalbeat]: https://www.elastic.co/guide/en/beats/journalbeat/current/running-on-docker.html
 [metricbeat]: https://www.elastic.co/guide/en/beats/metricbeat/current/running-on-docker.html
 [packetbeat]: https://www.elastic.co/guide/en/beats/packetbeat/current/running-on-docker.html
 

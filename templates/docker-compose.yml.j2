@@ -24,4 +24,10 @@ services:
       - NET_RAW
       - NET_ADMIN
     {%- endif %}
+
+    {% if beat == 'journalbeat' %}
+    volumes:
+      - /etc/machine-id:/etc/machine-id
+      - /etc/hostname:/etc/hostname:ro
+    {%- endif %}
 {% endfor %}

@@ -1,0 +1,11 @@
+journalbeat.inputs:
+- paths: []
+
+processors:
+- add_host_metadata:
+- add_cloud_metadata:
+
+output.elasticsearch:
+  hosts: ['elasticsearch:9200']
+  username: elastic
+  password: changeme

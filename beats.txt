@@ -1,5 +1,6 @@
 auditbeat
 filebeat
 heartbeat
+journalbeat
 metricbeat
 packetbeat
